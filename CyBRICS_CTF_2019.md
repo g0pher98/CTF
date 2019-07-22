@@ -7,14 +7,20 @@ with team `ROKA`. (198 / 775)
 [Warmup (Web, Baby, 10 pts)](#warmup-web-baby-10-pts)  
 
 # Mic Check (Cyber, Baby, 10 pts)
-`Have you read the game rules? There's a flag there.`  
+> Have you read the [game rules](https://cybrics.net/rules)? There's a flag there.  
+
 문제에서 game rules를 확인했는지 물어보았다. 실제로 확인해보니 `What's a CTF` 섹션에서 flag를 발견할 수 있었다.  
 flag : `cybrics{W3lc0M3_t0_t3h_G4M#}`
 
 # Caesaref (Web, Hard, 50 pts)
+> There is an additional one: Fixaref  
+> This web resource is highly optimized:  
+> http://45.77.218.242/
 
 # Oldman Reverse (Reverse, Baby, 10 pts)
-`I've found this file in my grandfather garage. Help me understand what it does`  
+> I've found this file in my grandfather garage. Help me understand what it does  
+> [oldman.asm](https://cybrics.net/files/oldman.asm)
+
 문제에서는 할아버지의 차고에서 아래 코드를 찾았다고 한다.
 ``` asm
 .MCALL  .TTYOUT,.EXIT
@@ -61,7 +67,10 @@ if __name__ == '__main__':
 flag : `cybrics{pdp_gpg_crc_dtd_bkb_php}`
 
 # Sender (Network, Baby, 10 pts)
-`We've intercepted this text off the wire of some conspirator, but we have no idea what to do with that.`  
+> We've intercepted this text off the wire of some conspirator, but we have no idea what to do with that.  
+> [intercepted_text.txt](https://cybrics.net/files/intercepted_text.txt)  
+> Get us their secret documents
+
 데이터를 가로챘다고 한다. 데이터 내용은 아래와 같다.  
 ``` smtp
 220 ugm.cybrics.net ESMTP Postfix (Ubuntu)
@@ -144,7 +153,9 @@ PORT    STATE SERVICE
 flag : `cybrics{Y0uV3_G0T_m41L}`
 
 # Warmup (Web, Baby, 10 pts)
-`E_TOO_EASY`  
+> E_TOO_EASY  
+> [Just get the flag](http://45.32.148.106/)
+
 쉽다고 하는것 같다. 링크를 클릭해서 들어가면 `/`에 접속했다가 `/final.html`로 리다이렉트 된다. `/`에 접속 후 리다이렉트 되기 때문에 `/`의 데이터를 볼 수 있다.
 ``` bash
 root@raspberrypi:~# wget 45.32.148.106
