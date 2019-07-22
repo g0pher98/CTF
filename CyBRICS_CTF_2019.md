@@ -1,5 +1,10 @@
 # CyBRICS CTF 2019
 with team `ROKA`. (198 / 775)  
+[Mic Check (Cyber, Baby, 10 pts)](#mic-check-cyber-baby-10-pts)  
+[Caesaref (Web, Hard, 50 pts)](#caesaref-web-hard-50-pts)  
+[Oldman Reverse (Reverse, Baby, 10 pts)](#oldman-reverse-reverse-baby-10-pts)  
+[Sender (Network, Baby, 10 pts)](#sender-network-baby-10-pts)  
+[Warmup (Web, Baby, 10 pts)](#warmup-web-baby-10-pts)  
 
 # Mic Check (Cyber, Baby, 10 pts)
 `Have you read the game rules? There's a flag there.`  
