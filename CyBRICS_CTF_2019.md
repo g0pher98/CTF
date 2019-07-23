@@ -5,11 +5,11 @@ with team `ROKA`. (198 / 775)
 [Oldman Reverse (Reverse, Baby, 10 pts)](#oldman-reverse-reverse-baby-10-pts)  
 [Sender (Network, Baby, 10 pts)](#sender-network-baby-10-pts)  
 [Warmup (Web, Baby, 10 pts)](#warmup-web-baby-10-pts)  
-[ProCTF (CTB, Baby, 10 pts)](#proctf-ctb-baby-10-pts)
-[Zakukozh (Cyber, Baby, 10 pts)](#zakukozh-cyber-baby-10-pts)
-[Honey, Help! (rebyC, Baby, 10 pts)](#honey-help-rebyc-baby-10-pts)
-[Paranoid (Network, Easy, 50 pts)](#paranoid-network-easy-50-pts)
-[Tone (Forensic, Baby, 10 pts)](#tone-forensic-baby-10-pts)
+[ProCTF (CTB, Baby, 10 pts)](#proctf-ctb-baby-10-pts)  
+[Zakukozh (Cyber, Baby, 10 pts)](#zakukozh-cyber-baby-10-pts)  
+[Honey, Help! (rebyC, Baby, 10 pts)](#honey-help-rebyc-baby-10-pts)  
+[Paranoid (Network, Easy, 50 pts)](#paranoid-network-easy-50-pts)  
+[Tone (Forensic, Baby, 10 pts)](#tone-forensic-baby-10-pts)  
 
 # Mic Check (Cyber, Baby, 10 pts)
 > Have you read the [game rules](https://cybrics.net/rules)? There's a flag there.  
@@ -403,6 +403,6 @@ Audacity를 열어 mp3를 드래그 하면 파형이 나온다. 조금만 확대
 
 음을 찾는 방법은 그래프의 가장 높은 두개의 봉우리에 마우스를 가져다 대면 피크값이 나온다. 이 두 주파수 값을 DTMP 주파수 값과 비교하여 다음과 같은 값을 도출해냈다.  
 `222 999 22 777 444 222 7777 7777 33 222 777 33 8 8 666 66 2 555 333 555 2 4`  
-이를 키패드의 문자와 연결시키면 플래그가 나온다.
+이를 키패드의 문자와 연결시키면 플래그가 나온다.  
 flag : `cybrics{secrettonalflag}`
 
