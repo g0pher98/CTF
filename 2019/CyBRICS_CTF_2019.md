@@ -11,6 +11,7 @@ with team `ROKA`. (198 / 1188)
 [Paranoid (Network, Easy, 50 pts)](#paranoid-network-easy-50-pts)  
 [Tone (Forensic, Baby, 10 pts)](#tone-forensic-baby-10-pts)  
 [Dock Escape (CTB, Easy, 151 pts)](#dock-escape-ctb-easy-151-pts)  
+[Bitkoff Bank (Web, Easy, 50 pts)](#bitkoff-bank-web-easy-50-pts)  
 
 # Mic Check (Cyber, Baby, 10 pts)
 > Have you read the [game rules](https://cybrics.net/rules)? There's a flag there.  
