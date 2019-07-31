@@ -12,6 +12,7 @@ with team `ROKA`. (198 / 1188)
 [Tone (Forensic, Baby, 10 pts)](#tone-forensic-baby-10-pts)  
 [Dock Escape (CTB, Easy, 151 pts)](#dock-escape-ctb-easy-151-pts)  
 [Bitkoff Bank (Web, Easy, 50 pts)](#bitkoff-bank-web-easy-50-pts)  
+[Disk Data (Forensic, Easy, 56 pts)](#disk-data-forensic-easy-56-pts)
 
 # Mic Check (Cyber, Baby, 10 pts)
 > Have you read the [game rules](https://cybrics.net/rules)? There's a flag there.  
@@ -526,3 +527,92 @@ USD : 0.9969
 cybrics{50_57R4n93_pR3c1510n}
 ```
 flag: `cybrics{50_57R4n93_pR3c1510n}`
+
+
+# Disk Data (Forensic, Easy, 56 pts)
+
+> Disk dump hides the flag. Obtain it  
+> [data2.zip.torrent](https://cybrics.net/files/data2.zip.torrent)  
+
+디스크 덤프가 flag를 숨겼다고 한다. Torrent가 안돼서 online torrent로 원본 파일을 받았다. 어떠한 파일인지 아래와 같이 file 명령을 통해 알아보았다.
+``` bash
+root@raspberrypi:~# file data2.bin 
+data2.bin: Linux rev 1.0 ext4 filesystem data, UUID=a795f441-a210-45b1-885b-ff53d3ca0a61 (needs journal recovery) (extents) (huge files)
+```
+`리눅스 ext4 파일시스템`임을 알 수 있다. 아래와 같이 `루프백 노드`에 연결한 후 마운트 시켜서 안에 무엇이 들었는지 확인했다.  
+``` bash
+root@raspberrypi:~# losetup /dev/loop0 ~/data2.bin 
+root@raspberrypi:~# mount /dev/loop0 /mnt/
+root@raspberrypi:~# cd /mnt/
+root@raspberrypi:/mnt# ll
+total 38
+drwxr-xr-x 17 g0pher g0pher  1024 Jul 19 23:24 .
+drwxr-xr-x 22 root   root    4096 Jun 27  2018 ..
+-rw-------  1 g0pher g0pher   411 Jul 19 23:18 .bash_history
+drwx------ 10 g0pher g0pher  1024 Jul 19 23:21 .cache
+drwx------  3 g0pher g0pher  1024 Jul 19 23:12 .compiz
+drwx------ 15 g0pher g0pher  1024 Jul 19 23:17 .config
+drwxr-xr-x  2 g0pher g0pher  1024 Jul 19 23:11 Desktop
+drwxr-xr-x  2 g0pher g0pher  1024 Jul 19 23:11 Documents
+drwxr-xr-x  7 g0pher g0pher  1024 Jul 31 17:28 Downloads
+drwx------  3 g0pher g0pher  1024 Jul 19 23:20 .gconf
+-rw-------  1 g0pher g0pher   946 Jul 19 23:20 .ICEauthority
+drwx------  3 g0pher g0pher  1024 Jul 19 23:11 .local
+drwx------  2 root   root   12288 Jul 19 23:11 lost+found
+drwx------  4 g0pher g0pher  1024 Jul 19 23:21 .mozilla
+drwxr-xr-x  2 g0pher g0pher  1024 Jul 19 23:11 Music
+drwxr-xr-x  2 g0pher g0pher  1024 Jul 19 23:11 Pictures
+drwxr-xr-x  2 g0pher g0pher  1024 Jul 19 23:11 Public
+drwxr-xr-x  2 g0pher g0pher  1024 Jul 19 23:11 Templates
+drwxr-xr-x  2 g0pher g0pher  1024 Jul 19 23:11 Videos
+-rw-------  1 g0pher g0pher    50 Jul 19 23:20 .Xauthority
+-rw-------  1 g0pher g0pher  1359 Jul 19 23:24 .xsession-errors
+-rw-------  1 g0pher g0pher  1430 Jul 19 23:18 .xsession-errors.old
+```
+`/home/계정/`에서 볼법한 파일과 디렉토리들이 있다. `.bash_history`를 통해 무슨 작업을 했었는지 확인했다.
+``` bash
+root@raspberrypi:/mnt# cat .bash_history 
+ls
+ls -anl
+bash
+su rev
+read -r URL
+cd Downloads/
+wget $URL
+eog kTd0T9g.png 
+convert kTd0T9g.png -fill white -draw "rectangle 0,0 300,35" kTd0T9g.png 
+eog kTd0T9g.png 
+ync
+sync
+ls -anl
+cd Downloads/
+wget https://www.torproject.org/dist/torbrowser/8.5.4/tor-browser-linux64-8.5.4_en-US.tar.xz
+wget https://github.com/geohot/qira/archive/v1.3.zip
+unzip v1.3.zip 
+ls
+tar xvf tor-browser-linux64-8.5.4_en-US.tar.xz
+```
+수상한 부분은 `read 명령`을 통해서 사용자가 입력한 값을 URL 이라는 변수에 넣었다. 이후, Download/ 디렉토리안에서 wget으로 해당 URL을 다운받고, 이미지를 흰색으로 수정한다.  
+``` bash
+root@raspberrypi:/mnt# ls Downloads | grep png
+kTd0T9g.png
+```
+해당 디렉토리에 수정한 이미지 파일이 있었고, 열어보니 좌측 상단 부분이 흰색으로 채워져 있었다. 이 부분에 무언가 숨겨져 있음을 알 수 있고, URL 변수에 담긴 값을 알아내서 원본 이미지를 찾아야 한다.  
+``` bash
+root@raspberrypi:/mnt# strings ~/data2.bin | grep "kTd0T9g.png"
+eog kTd0T9g.png 
+convert kTd0T9g.png -fill white -draw "rectangle 0,0 300,35" kTd0T9g.png 
+
+(...)
+
+https://i.imgur.com/kTd0T9g.png
+
+(...)
+
+#kTd0T9g.png
+file:///home/ctfer/Downloads/kTd0T9g.png
+#   kTd0T9g.png
+```
+한참을 찾다가 결국 바이너리에서 string을 긁어서 찾아냈다. `https://i.imgur.com/kTd0T9g.png` 이 URL로 접속하면 원본 이미지에 flag가 있다.  
+flag : `cybrics{A11W4Y5_D1G_D33P3R}`  
+
