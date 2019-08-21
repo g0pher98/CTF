@@ -7,6 +7,7 @@ Exclusive OR Non-Exclusive(210)
 Old Days(300)  
 ## Misc
 Directories(100)  
+Look Inside(100)  
 Get_Me(100)  
 Quick Response(500)  
 Poor prisoner(550)  
@@ -80,6 +81,10 @@ It is a type of illusionary filesystem. It does not exist on a disk. Can U name 
 ```
 가상 파일시스템의 일종이라고 한다.  
 flag : `secarmy{/proc}`
+
+# Look Inside(100)
+wav 파일이 주어졌다. 나는 음원 관련된 문제는 `Audacity`을 이용한다. 파일을 열면 파형이 나오는데 별다른 특이사항은 보이지 않는다. 파형 말고 스펙트로그램(소리나 파동을 시각화)을 선택하면 숨겨진 플래그가 나온다.
+flag : `secarmy{5p3ctrum5_@r3_@w3s0m3}`
 
 # Get_Me(100)
 압축파일이 주어져서 풀어보니 다음과 같은 문자가 나왔다.
