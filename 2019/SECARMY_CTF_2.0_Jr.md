@@ -497,7 +497,13 @@ flag : `secarmy{fl@g_1s_th3_b@s3}`
 flag : `secarmy{h3r3_y0u_c@ptur3}`
 
 # IMAGE(50)
+zsteg를 이용해 풀었다.
+flag : `secarmy{th3_im@ge_s4ys_i7_a11}`
+
 # Th3_G1F7(50)
+zsteg를 이용해 풀었다.
+flag : `secarmy{h3re_1s_th3_g1ft}`
+
 # Welcome All(10)
 그냥 플래그 주는 문제다.  
 flag : `secarmy{w3lc0me_y0u_all}`
