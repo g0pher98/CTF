@@ -650,12 +650,281 @@ if ( s[37] != 53 || s[7] != 102 || s[11] != 56 || s[12] != 55 || s[23] != 50 || 
 ```
 위에서 지정한 인덱스에 해당 값이 들어가면 로직을 통과할 수 있다.
 
+부끄럽지만 아래는 문제를 푼 페이로드다. `z3`나 `angr`를 사용하면 더 이쁘게 풀 수 있는것 같다.
+```python
+unk_400FC0 = [
+  0x80, 0x80, 0x0FF, 0x80, 0x0FF, 0x0FF, 0x0FF, 0x0FF, 0x80, 0x0FF,
+  0x0FF, 0x80, 0x80, 0x0FF, 0x0FF, 0x80, 0x0FF, 0x0FF, 0x80, 0x0FF,
+  0x80, 0x80, 0x0FF, 0x0FF, 0x0FF, 0x0FF, 0x80, 0x0FF, 0x0FF, 0x0FF,
+  0x80, 0x0FF
+]
 
+
+# base()
+# ====================================
+
+def inputData(flag):
+  for i in range(6):
+    flag[i] = "TWCTF{"[i]
+  flag[7] = chr(102)
+  flag[11] =chr(56)
+  flag[12] =chr(55)
+  flag[23] =chr(50)
+  flag[31] =chr(52)
+  flag[37] =chr(53)
+  flag[38] =chr(125)
+  return flag
+
+def inputCorN(flag):
+  n = "0123456789"
+  c = "abcdef"
+  for i in range(len(unk_400FC0)):
+    if len(flag[6+i]) == 1:
+      pass
+    elif unk_400FC0[i] == 0x80:
+      flag[6+i] = c
+    else:
+      flag[6+i] = n
+  return flag
+
+# check()
+# ====================================
+v21 = [0x15e, 0xda, 0x12f, 0x131, 0x100, 0x131, 0xfb, 0x102]
+v25 = [0x52, 0xc, 0x1, 0xf, 0x5c, 0x5, 0x53, 0x58]
+v29 = [0x129, 0x103, 0x12b, 0x131, 0x135, 0x10b, 0xff, 0xff]
+v33 = [0x1, 0x57, 0x7, 0xd, 0xd, 0x53, 0x51, 0x51]
+
+count = {
+    '0':3, '1':2, '2':2, '3':0, '4':3, '5':2, '6':1, '7':3, '8':3, '9':1,
+    'a':1, 'b':3, 'c':1, 'd':2, 'e':2, 'f':3
+}
+
+def checkCount(flag, max=38):
+  for k, v in count.items():
+    if list(flag.values())[:max+1].count(k) > v:
+      return False
+  return True
+
+def checkSum(lst):
+  s = 0
+  for i in range(16):
+    s += ord(lst[2*(i+3)])
+  if s == 1160:
+    return True
+  return False
+
+def checkSumXOR(flag):
+  for i in range(8):
+    s1, s2, x1, x2 = 0, 0, 0, 0
+    for j in range(4):
+      s1 += ord(flag[4*i+6+j])
+      x1 ^= ord(flag[4*i+6+j])
+      s2 += ord(flag[8*j+6+i])
+      x2 ^= ord(flag[8*j+6+i])
+    if s1 != v21[i] or x1 != v25[i] or s2 != v29[i] or x2 != v33[i]:
+      return False
+  return True
+
+
+def checkSumXORmini(flag, i):
+  s = 0
+  x = 0
+  for j in range(4):
+    s += ord(flag[4*i+6+j])
+    x ^= ord(flag[4*i+6+j])
+  if s != v21[i] or x != v25[i]:
+    return False
+  return True
+
+
+
+    
+# ====================================
+
+def analysis(flag, lst,result):
+  if len(result) == 1:
+    for i in range(4):
+      if len(flag[i]) > 1:
+        flag[lst[i]] = result[0][i]
+  else:
+    v = ["" for _ in range(4)]
+    for r in result:
+      for i in range(4):
+        if r[i] not in v[i]:
+          v[i] += r[i]
+    for i in range(4):
+      if len(flag[lst[i]]) > len(v[i]):
+        flag[lst[i]] = v[i]
+  return flag
+
+def possible(flag, lst,pls,xor):
+    res = []
+    s = 0
+    x = 0
+    for i in flag[lst[0]]:
+      for j in flag[lst[1]]:
+        for k in flag[lst[2]]:
+          for l in flag[lst[3]]:
+            s = ord(i) + ord(j) + ord(k) + ord(l)
+            x = ord(i) ^ ord(j) ^ ord(k) ^ ord(l)
+            if s == pls and x == xor :
+              res.append([i, j, k, l])
+    return analysis(flag, lst, res)
+
+def search(flag):
+  for i in range(8):
+    lst = [4*i+6, 4*i+7, 4*i+8, 4*i+9]
+    flag = possible(flag, lst, v21[i], v25[i])
+    lst = [6+i, 14+i, 22+i, 30+i]
+    flag = possible(flag, lst, v29[i], v33[i])
+  return flag
+
+
+# ===========================
+
+def isCorrect(flag):
+  b = True
+  if len("".join(flag.values())) != 39:
+    b = False
+  elif not checkSum(flag) or not checkCount(flag) or not checkSumXOR(flag):
+    b = False
+  return b
+
+def base(flag):
+  flag = inputData(flag)
+  flag = inputCorN(flag)
+  return flag
+
+def deepFind(flag, deep):
+  f = {k:v for k,v in flag.items()}
+  for c in flag[deep]:
+    f[deep] = c
+    if deep == 38:
+      if isCorrect(f):
+        print("".join(flag.values()))
+        exit()
+    else:
+      if not checkCount(f, deep):
+        continue
+      elif deep >= 9 and (deep-9)%4 == 0 and not checkSumXORmini(f, (deep-9)//4):
+        continue
+      deepFind(f, deep+1)
+
+
+def find(flag):
+  deepFind(flag, 0)
+  return flag
+
+def main():
+  flag = base({i:"0123456789abcdef" for i in range(39)})
+  flag = search(flag)
+  flag = find(flag)
+
+if __name__ == '__main__':
+  main()
+```
+
+`z3` 모듈을 사용하면 아래와 같은 아름다운 코드로 문제를 풀어낼 수 있다.
+```python
+#-*-coding:utf-8-*-
+from z3 import *
+check1=[3,2,2,0,3,2,1,3,3,1,1,3,1,2,2,3]
+check2=[0x15e,0xda,0x12f,0x131,0x100,0x131,0xfb,0x102]
+check3=[0x52,0xc,0x1,0xf,0x5c,0x5,0x53,0x58]
+check4=[0x129,0x103,0x12b,0x131,0x135,0x10b,0xff,0xff]
+check5=[0x1,0x57,0x7,0xd,0xd,0x53,0x51,0x51]
+check6=[0x80,0x80,0xff,0x80,0xff,0xff,0xff,0xff,0x80,0xff,0xff,0x80,0x80,
+        0xff,0xff,0x80,0xff,0xff,0x80,0xff,0x80,0x80,0xff,0xff,0xff,0xff,0x80,
+        0xff,0xff,0xff,0x80,0xff]
+
+# 비트벡터로 flag 배열 39자리 선언
+flag=[BitVec(i,8) for i in range(39)]
+
+# 해를 구하는 Solver 객체 생성
+s=Solver()
+
+# ========================
+
+s.add(flag[0]==ord('T'))
+s.add(flag[1]==ord('W'))
+s.add(flag[2]==ord('C'))
+s.add(flag[3]==ord('T'))
+s.add(flag[4]==ord('F'))
+s.add(flag[5]==ord('{'))
+s.add(flag[38]==ord('}'))
+index=0
+
+# =========================
+
+for i in "0123456789abcdef":
+        cnt=0
+        for j in flag:
+                # 조건문 자체가 Solver의 조건이 되기 때문에
+                # z3의 If 메소드를 사용
+                cnt+=If(j==ord(i),1,0)
+        s.add(cnt==check1[index])
+        index+=1
+
+# ==========================
+
+for i in range(0,8):
+        tmp1=0
+        tmp2=0
+        for j in range(0,4):
+                tmp1+=flag[4*i+6+j]
+                tmp2^=flag[4*i+6+j]
+        s.add(tmp1==check2[i])
+        s.add(tmp2==check3[i])
+
+# ==========================
+
+for i in range(0,8):
+        tmp1=0
+        tmp2=0
+        for j in range(0,4):
+                tmp1+=flag[8*j+6+i]
+                tmp2^=flag[8*j+6+i]
+        s.add(tmp1==check4[i])
+        s.add(tmp2==check5[i])
+
+# ==========================
+
+for i in range(0,32):
+        if(check6[i]==0x80):
+                s.add(flag[i+6] > 96)
+                s.add(flag[i+6] <= 102)
+                # z3의 And 메소드를 사용하면
+                # 아래와 같이 구현도 가능
+                # s.add(And(flag[i+6]>96,flag[i+6]<=102))
+        elif(check6[i]==0xff):
+                s.add(And(flag[i+6]>47,flag[i+6]<=57))
+
+# ===========================
+
+summ=0
+for i in range(0,16):
+        summ+=flag[2*(i+3)]
+s.add(summ==1160)
+s.add(flag[37]==ord('5'))
+s.add(flag[7]==ord('f'))
+s.add(flag[11]==ord('8'))
+s.add(flag[12]==ord('7'))
+s.add(flag[23]==ord('2'))
+s.add(flag[31]==ord('4'))
+
+# =============================
+
+print(s.check())
+m=s.model()
+
+print("".join([chr((m[i].as_long())) for i in m]))
+```
+아름다운 `z3` 코드의 출처 : [CAT-Security](https://github.com/goseungduk/CTF_WriteUp/tree/master/TokyoWesterns_2019/reverse/easy_crack_me)  
 
 ## Flag
+`TWCTF{df2b4877e71bd91c02f8ef6004b584a5}`
 
-
-#nothing more to say
+# nothing more to say
 ## Problem
 Japan is fucking hot.  
   
@@ -663,7 +932,30 @@ nc nothing.chal.ctf.westerns.tokyo 10001
   
 [warmup.c](https://score.ctf.westerns.tokyo/attachments/4/warmup-324b473c61799a01c8b14f63c559ff408a9756a738198c5026735161a7608afa.c)  
 [warmup](https://score.ctf.westerns.tokyo/attachments/4/warmup-b8fa17414a043a62ba16fdeb4f82051d35fc6f434f7130d6d988d6c2d312e73e)
+
 ## Play
+문제의 소스코드는 아래와 같다.
+```c
+// gcc -fno-stack-protector -no-pie -z execstack  warmup.c -o warmup
+#include <stdio.h>
+
+void init_proc() {
+    setbuf(stdout, NULL);
+    setbuf(stdin, NULL);
+    setbuf(stderr, NULL);
+}
+
+
+int main(void) {
+    char buf[0x100];
+    init_proc();
+    puts("Hello CTF Players!\nThis is a warmup challenge for pwnable.\nWe provide some hints for beginners spawning a shell to get the flag.\n\n1. This binary has no SSP (Stack Smash Protection). So you can get control of instruction pointer with stack overflow.\n2. NX-bit is disabled. You can run your shellcode easily.\n3. PIE (Position Independent Executable) is also disabled. Some memory addresses are fixed by default.\n\nIf you get stuck, we recommend you to search about ROP and x64-shellcode.\nPlease pwn me :)");
+    gets(buf);
+    printf(buf);
+    return 0;
+}
+```
+`gets(buf)`에서 buf 변수에 Overflow 할 수 있는 취약점이 존재한다.
 ```python
 from pwn import *
 #context.log_level = 'debug'
