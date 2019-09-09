@@ -167,8 +167,31 @@ plaintext plaintext everywhere....
 Note: put flag into AFFCTF{} format
 
 # Reading Disfunction
-150
-nc 165.22.22.11 9999
+nc 165.22.22.11 9999  
+
+## play
+``` bash
+➜ ctf nc 165.22.22.11 9999
+++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>>++++++++++++++++.------------.-------.+++++++++++++++++++.<<++.>>+++.---------------.-------.+++++++++++++++++++.<<.>>-------------------.+++++++++++++++++.-------------.<<.>>++++++++++++++++++++.----------.++++++.<<.>>---------.+++..----.--.+++++.-------.<<.>>-.+++++++++.+++.<<.>>---------.++++++++++.<<.>>----------.+++++.<<.>>-----------.++.+++++++..<<.>------------------.----.<+.
+```
+접속하면 위와같이 `brainfuck` 코드가 나온다. 실행해보면 `that what are you looking for is in cell 40!` 라고 출력된다. 대회 당시 `python jail`문제라고 생각해서 무한 삽질했다.
+
+## knowledge
+결론은 이 nc 서버는 brinfuck 코드를 입력받는다. 이를 알았다면 brainfuck에 대해 조금 더 알아보아야 한다(https://ko.wikipedia.org/wiki/%EB%B8%8C%EB%A0%88%EC%9D%B8%ED%8D%BD).  
+- `>` 포인터 증가  
+- `.` 포인터가 가리키는 바이트 값 증가  
+
+## solve
+40번째 에 내가 찾는것이 있다고 했으니 다음과 같이 요청하면 flag를 얻을 수 있다.
+``` bash
+➜ ctf echo `python -c 'print(">"*40 + ">."*80)'` | nc 165.22.22.11 9999
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.>.
+++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>>++++++++++++++++.------------.-------.+++++++++++++++++++.<<++.>>+++.---------------.-------.+++++++++++++++++++.<<.>>-------------------.+++++++++++++++++.-------------.<<.>>++++++++++++++++++++.----------.++++++.<<.>>---------.+++..----.--.+++++.-------.<<.>>-.+++++++++.+++.<<.>>---------.++++++++++.<<.>>----------.+++++.<<.>>-----------.++.+++++++..<<.>------------------.----.<+.
+AFFCTF{!s_th!s_th3_r3@l_l!f3__or__!s_th!s_just_f@nt@sy___}
+```
+## flag
+`AFFCTF{!s_th!s_th3_r3@l_l!f3__or__!s_th!s_just_f@nt@sy___}`  
+[참고](https://github.com/kernelpoppers/ctf_writeups/tree/master/AffinityCTF2019/reading_disfunction)
 
 # F-word
 200
@@ -249,6 +272,37 @@ Note: put flag into AFFCTF{} format
 
 # Epic Poem
 Alicja sent text for her friend translator Bob. Because Alicja likes privacy, she encrypted text with key. Bob translate the text and sent back to her also in ecrypted form. Can you find the key?
+
+## play
+encrypt된 두 파일이 주어졌다. 둘 중 하나가 flag일 것이라고 생각하고 `AFFCTF{`와 XOR 하면 한개의 파일에서 `Litwo!` 문자열이 나오고, 이를 검색해보니 `Litwo! Ojczyzno moja!(리투아니아! 나의 조국이여!)`라는 시의 첫부분이었다. 시의 뒷부분을 연결해서 복호화 하면 플래그가 나온다.
+``` python
+from Crypto.Util.strxor import strxor
+
+enc1 = open("enc1").read()
+enc2 = open("enc2").read()
+
+guess = "AFFCTF{"
+
+print(strxor(guess, enc1[:len(guess)])) # Litwo!
+print(strxor(guess, enc2[:len(guess)]))
+
+key = """Litwo! Ojczyzno moja! Ty jestes jak zdrowie.
+Ile cie trzeba cenic, ten tylko sie dowie,
+Kto cie stracil. Dzis pieknosc twa w calej ozdobie""".replace("\n", " ")
+
+print(strxor(key, enc1[:len(key)]))
+'''
+AFFCTF{M4nY_t1m3_PaD_1$_b@d__!!!}
+AFFCTF{M4nY_t1m3_PaD_1$_b@d__!!!}
+AFFCTF{M4nY_t1m3_PaD_1$_b@d__!!!}
+AFFCTF{M4nY_t1m3_PaD_1$_b@d__!!!}
+'''
+```
+
+## flag
+`AFFCTF{M4nY_t1m3_PaD_1$_b@d__!!!}`  
+[참고](https://github.com/pcw109550/write-up/tree/master/2019/Affinity/Epic_Poem)
+
 
 # Grains of Sand
 ...sand...
