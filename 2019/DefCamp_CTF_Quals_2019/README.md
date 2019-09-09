@@ -85,6 +85,7 @@ print base64.b64encode(string_xor(flag, key))
 Author: Lucian  
 
 ## POC
+FLAG의 앞 4bytes가 `DCTF`임을 알기때문에 몇번 돌려보면 key가 48임을 알 수 있다.
 ``` python
 import base64
 
