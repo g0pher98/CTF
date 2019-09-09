@@ -1,16 +1,16 @@
 # Affinity CTF 2019 Quals
 
 
-# Web
+## Web
 [Download me ...](#download-me-...)  
 [Hello unknown](#Hello-unknown)  
 
-# Forensics
+## Forensics
 [Reflection](#Reflection)
 [Man In the Middle](#Man-In-the-Middle)
 [Pharmacist Nightmare](#Pharmacist-Nightmare)
 
-# Misc
+## Misc
 [Sanity Check](#Sanity-Check)
 [DISC ORDer](#DISC-ORDer)
 [MIDI1](#MIDI1)
@@ -22,11 +22,11 @@
 [Random Memory](#Random-Memory)
 [MIDI2](#MIDI2)
 
-# Re
+## Re
 [Backdoor](#Backdoor)
 [Evol Corp 1988](#Evol-Corp-1988)
 
-# Stego
+## Stego
 [Falling into Spiral](#Falling-into-Spiral)
 [Stegoego](#Stegoego)
 [Alphinity](#Alphinity)
@@ -34,7 +34,7 @@
 [sQRt(follow the white rabbit)](#sQRt-follow-the-white-rabbit)
 [Intensity Overload](#Intensity-Overload)
 
-# Crypto
+## Crypto
 [Alan said.](#Alan-said.)
 [9th Symphony](#9th-Symphony)
 [Breaking Bad](#Breaking-Bad)
