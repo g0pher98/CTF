@@ -1,0 +1,1 @@
+Flag is in /home/twitch/flag.txt We'll jump into your shellcode and output 1024 bytes of stdout twitch.tv/csawtv

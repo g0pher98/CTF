@@ -1,0 +1,5 @@
+Ok this one's actually a revolver.
+
+7 shots, no more no less.
+
+nc pwn.chal.csaw.io 1008
