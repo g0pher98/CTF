@@ -1,0 +1,5 @@
+We know other other e-commerce sites have had horrible bugs recently, but our IT department says with the new versions of our dependencies, everything will be fine...
+
+By: itszn (ret2 systems)
+
+http://web.chal.csaw.io:1002
