@@ -1,0 +1,121 @@
+# -*- coding: utf8 -*-
+from pwn import *
+
+#context.log_level="debug"
+
+INF = 10000000000
+
+
+x = remote("115.68.235.105",31225)
+
+array = []
+costs = []
+
+#### Tools ####
+def between(a, b, c):
+   if a <= b and b < c:
+      return True
+   return False
+
+#### Logic ####
+
+class Vertex:
+   def __init__(self, cost):
+      self.visited = False
+      self.cost = cost
+      self.weight = INF
+   
+   def getWeight(self):
+      return self.weight
+   
+   def updateWeight(self, new):
+      self.weight = new
+   
+   def visit(self):
+      self.visited = True
+   
+   def isVisited(self):
+      return self.visited
+   
+   def getCost(self):
+      return self.cost
+
+   
+def getNearXY(loc, limit):
+   """
+   Get Near Vertex's XY location
+   return(list) : [ (x, y), (x1, y1), ... ]
+   """
+   x, y = loc
+   lst = []
+   for xy in [ (x-1, y), (x, y-1), (x+1, y), (x, y+1) ]:
+      if between(0, xy[0], limit) and between(0, xy[1], limit):
+         lst.append(xy)
+   return lst
+   
+
+def getMinistWeightXY(l):
+   """
+   Get Minimalist Cost Vertex's index that didn't visited
+   return(tuple) : (x, y)
+   """
+   mini = INF
+   a, b = INF, INF
+   for x in range(l):
+      for y in range(l):
+         #print(len(array[0]))
+         if (not array[x][y].isVisited()) and array[x][y].getWeight() < mini:
+            mini = array[x][y].getWeight()
+            a, b = x, y      
+   return a, b
+
+
+def init(l):
+   """
+   Init cost list and array list
+   return(none)
+   """
+   global cost
+   global array
+   cost, array = [], []
+   cost = [[INF for e in range(l)] for _ in range(l)]
+   x.recvuntil("Start from here\n")
+   for _ in range(l):
+      row = []
+      for n in x.recvline().split(" ")[:-1]:
+         if int(n) == 0:
+            row.append(Vertex(INF))
+         else:
+            row.append(Vertex(int(n)))
+      array.append(row)
+   array[0][0].updateWeight(array[0][0].getCost())
+   x.recvuntil("Minimum cost > ")
+
+def dijkstra(length):
+   while True:
+      location = getMinistWeightXY(length)
+      if location == (INF, INF) :
+         return -1
+      locVertex = array[location[0]][location[1]]
+      if location == (length-1, length-1):
+         return locVertex.getWeight()
+      locVertex.visit()
+      for xy in getNearXY(location, length):
+         element = array[xy[0]][xy[1]]
+         newWeight = element.getCost() + locVertex.getWeight()
+         if newWeight < element.getWeight():
+            element.updateWeight(newWeight)
+   
+def main():
+   p = log.progress("Do It!")
+   for gameRound in range(1, 31):
+      p.status("Round"+str(gameRound))
+      length = 10+gameRound-1
+      init(length)
+      x.sendline(str(dijkstra(length)))
+      x.recvline()
+      if gameRound == 30:
+         p.success(x.recvuntil("}"))
+
+
+main()
