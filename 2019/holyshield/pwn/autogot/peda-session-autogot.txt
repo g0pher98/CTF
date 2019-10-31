@@ -1,0 +1,2 @@
+tbreak __libc_start_main@plt
+
