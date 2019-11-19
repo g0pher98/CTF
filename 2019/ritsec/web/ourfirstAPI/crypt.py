@@ -1,6 +1,7 @@
 from Crypto.PublicKey import RSA
 from base64 import b64decode
 from Crypto.Util import number
+import jwt
 
 key64 = b'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBquzMGkZlJmZm4pYppxeDmsGd\
 8+9mOh5S9O7W7Gu5VByfl7i3JdCfGxRJdHscg6l321PeTXsXGZ7goHd4Xjv/FtKQ\
