@@ -1,0 +1,15 @@
+17년 12월 4일에 입대를 하고
+19년 9월 3일에 제대를 하네요.
+1년 9개월 0일동안......
+
+
+
+
+let's get into the charm of classic cipher.
+This password is based on matrix.
+all lowercase
+
+flag{dcyoebgxe}
+
+
+위 플래그 내용을 문제의 날짜를 이용해서 푸는듯,,,
